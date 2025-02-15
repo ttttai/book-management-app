@@ -1,18 +1,17 @@
 package main
 
 import (
-	"fmt"
+	"net/http"
 
-	"rsc.io/quote"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	var message string = "hello23333"
-	var num int = 10
-	if num == 3 {
-		fmt.Println(3)
-	} else {
-		fmt.Println(message)
-	}
-	fmt.Println(quote.Go())
+	r := gin.Default()
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "pong",
+		})
+	})
+	r.Run()
 }
