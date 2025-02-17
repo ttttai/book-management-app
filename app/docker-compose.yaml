@@ -6,6 +6,7 @@ services:
       - db
     ports:
       - 8080:8080
+      - 2345:2345 # delveと通信用のポート
     volumes:
       - ./:/go/src/app
     tty: true

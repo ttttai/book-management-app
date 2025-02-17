@@ -1,31 +1,35 @@
 package entities
 
+import "time"
+
 type User struct {
-	id    string
-	name  string
-	email string
+	ID        string
+	Name      string
+	Email     string
+	CreatedAt time.Time
 }
 
-func NewUser(id, name string, email string) *User {
+func NewUser(id, name string, email string, create_at time.Time) *User {
 	return &User{
-		id:    id,
-		name:  name,
-		email: email,
+		ID:        id,
+		Name:      name,
+		Email:     email,
+		CreatedAt: create_at,
 	}
 }
 
 func (u *User) GetID() string {
-	return u.id
+	return u.ID
 }
 
 func (u *User) GetName() string {
-	return u.name
+	return u.Name
 }
 
 func (u *User) GetEmail() string {
-	return u.email
+	return u.Email
 }
 
 func (u *User) SetName(name string) {
-	u.name = name
+	u.Name = name
 }
