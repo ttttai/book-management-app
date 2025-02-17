@@ -9,9 +9,3 @@ app/.air.toml
 app/my.cnf
 
 app/data
-
-app2/.air.toml
-
-app2/my.cnf
-
-app2/data
