@@ -3,3 +3,15 @@ docker_test/db/mysql-data
 docker_test/db/my.cnf
 
 docker_test/tmp
+
+app/.air.toml
+
+app/my.cnf
+
+app/data
+
+app2/.air.toml
+
+app2/my.cnf
+
+app2/data
