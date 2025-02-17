@@ -11,3 +11,5 @@ app/my.cnf
 app/data
 
 app/tmp
+
+.vscode
