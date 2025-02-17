@@ -4,19 +4,26 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ttttai/golang/infra/repositories"
+	"github.com/ttttai/golang/usecases"
 	"gorm.io/gorm"
 )
 
-func SetupRouter(d *gorm.DB) *gin.Engine {
+func SetupRouter(db *gorm.DB) *gin.Engine {
 	r := gin.Default()
 
-	todo := r.Group("/todo")
+	userRepository := repositories.NewUserRepository(db)
+	userUsecase := usecases.NweUserUsecase(userRepository)
+	UserController := NewUserController(userUsecase)
+
+	todo := r.Group("/user")
 	{
-		todo.GET("/ping", func(c *gin.Context) {
+		todo.GET("", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
-				"message": "test",
+				"message": "ping-pong-pong",
 			})
 		})
+		todo.GET("/:id", UserController.GetUser)
 	}
 
 	return r

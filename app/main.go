@@ -13,7 +13,6 @@ func main() {
 		fmt.Println("failed to connect database")
 		return
 	}
-	fmt.Println("Hello, World!")
 
 	r := controllers.SetupRouter(db)
 	r.Run()
