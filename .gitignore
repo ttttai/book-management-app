@@ -9,3 +9,5 @@ app/.air.toml
 app/my.cnf
 
 app/data
+
+app/tmp
