@@ -2,19 +2,19 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 
-	"github.com/gin-gonic/gin"
+	"github.com/ttttai/golang/controllers"
+	"github.com/ttttai/golang/infra"
 )
 
 func main() {
+	db, err := infra.NewDB()
+	if err != nil {
+		fmt.Println("failed to connect database")
+		return
+	}
 	fmt.Println("Hello, World!")
 
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "ping-pong-pong-ping2",
-		})
-	})
+	r := controllers.SetupRouter(db)
 	r.Run()
 }
