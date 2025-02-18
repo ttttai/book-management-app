@@ -23,7 +23,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 				"message": "ping-pong-pong",
 			})
 		})
-		todo.GET("/:id", UserController.GetUser)
+		todo.GET("/:id", UserController.GetById)
 	}
 
 	return r

@@ -3,10 +3,12 @@ package usecases
 import (
 	"github.com/ttttai/golang/domain/entities"
 	"github.com/ttttai/golang/domain/repositories"
+	"github.com/ttttai/golang/infra/models"
 )
 
 type IUserUsecase interface {
-	GetUser(id string) (*entities.User, error)
+	GetById(id string) (*entities.User, error)
+	Create(user *models.User) (*entities.User, error)
 }
 
 type UserUsecase struct {
@@ -19,11 +21,20 @@ func NweUserUsecase(userRepository repositories.IUserRepository) IUserUsecase {
 	}
 }
 
-func (uu *UserUsecase) GetUser(id string) (*entities.User, error) {
-	user, err := uu.userRepository.GetUser(id)
+func (uu *UserUsecase) GetById(id string) (*entities.User, error) {
+	user, err := uu.userRepository.GetById(id)
 	if err != nil {
 		return nil, err
 	}
 
 	return user, nil
+}
+
+func (uu *UserUsecase) Create(user *models.User) (*entities.User, error) {
+	newUser, err := uu.userRepository.Create(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return newUser, nil
 }

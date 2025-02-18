@@ -9,14 +9,20 @@ import (
 
 type IUserController interface {
 	GetUser(c *gin.Context)
+	Create(c *gin.Context)
 }
 
 type UserController struct {
 	userUsecase usecases.IUserUsecase
 }
 
-type FindRequestParam struct {
+type GetRequestParam struct {
 	ID string `uri:"id" binding:"required"`
+}
+
+type CreateRequestParam struct {
+	Name  string `json:"name" binding:"required"`
+	Email string `json:"email" binding:"required"`
 }
 
 func NewUserController(userUsecase usecases.IUserUsecase) *UserController {
@@ -25,15 +31,15 @@ func NewUserController(userUsecase usecases.IUserUsecase) *UserController {
 	}
 }
 
-func (uc *UserController) GetUser(c *gin.Context) {
-	var request FindRequestParam
+func (uc *UserController) GetById(c *gin.Context) {
+	var request GetRequestParam
 
 	if err := c.ShouldBindUri(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	res, err := uc.userUsecase.GetUser(request.ID)
+	res, err := uc.userUsecase.GetById(request.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
