@@ -24,6 +24,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 			})
 		})
 		todo.GET("/:id", UserController.GetById)
+		todo.POST("", UserController.Create)
 	}
 
 	return r

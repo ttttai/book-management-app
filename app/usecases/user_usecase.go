@@ -4,11 +4,12 @@ import (
 	"github.com/ttttai/golang/domain/entities"
 	"github.com/ttttai/golang/domain/repositories"
 	"github.com/ttttai/golang/infra/models"
+	"github.com/ttttai/golang/usecases/dto"
 )
 
 type IUserUsecase interface {
 	GetById(id string) (*entities.User, error)
-	Create(user *models.User) (*entities.User, error)
+	Create(user dto.CreateUserRequestParam) (*entities.User, error)
 }
 
 type UserUsecase struct {
@@ -30,8 +31,12 @@ func (uu *UserUsecase) GetById(id string) (*entities.User, error) {
 	return user, nil
 }
 
-func (uu *UserUsecase) Create(user *models.User) (*entities.User, error) {
-	newUser, err := uu.userRepository.Create(user)
+func (uu *UserUsecase) Create(user dto.CreateUserRequestParam) (*entities.User, error) {
+	newUserModel := models.User{
+		Name:  user.Name,
+		Email: user.Email,
+	}
+	newUser, err := uu.userRepository.Create(&newUserModel)
 	if err != nil {
 		return nil, err
 	}

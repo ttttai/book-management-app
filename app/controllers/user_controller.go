@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/ttttai/golang/usecases"
+	"github.com/ttttai/golang/usecases/dto"
 )
 
 type IUserController interface {
@@ -16,15 +17,6 @@ type UserController struct {
 	userUsecase usecases.IUserUsecase
 }
 
-type GetRequestParam struct {
-	ID string `uri:"id" binding:"required"`
-}
-
-type CreateRequestParam struct {
-	Name  string `json:"name" binding:"required"`
-	Email string `json:"email" binding:"required"`
-}
-
 func NewUserController(userUsecase usecases.IUserUsecase) *UserController {
 	return &UserController{
 		userUsecase: userUsecase,
@@ -32,7 +24,7 @@ func NewUserController(userUsecase usecases.IUserUsecase) *UserController {
 }
 
 func (uc *UserController) GetById(c *gin.Context) {
-	var request GetRequestParam
+	var request dto.GetUserRequestParam
 
 	if err := c.ShouldBindUri(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -49,4 +41,20 @@ func (uc *UserController) GetById(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, res)
+}
+
+func (uc *UserController) Create(c *gin.Context) {
+	var request dto.CreateUserRequestParam
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	res, err := uc.userUsecase.Create(request)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, res)
 }

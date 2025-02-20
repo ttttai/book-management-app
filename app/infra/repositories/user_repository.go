@@ -18,14 +18,14 @@ func NewUserRepository(db *gorm.DB) repositories.IUserRepository {
 }
 
 func (ur *UserRepository) GetById(id string) (*entities.User, error) {
-	var user models.User
+	var user *models.User
 
-	result := ur.db.First(&user, id)
+	result := ur.db.First(user, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return user.ToDomainEntity(), nil
+	return user.ToDomainModel(), nil
 }
 
 func (ur *UserRepository) Create(user *models.User) (*entities.User, error) {
@@ -34,5 +34,5 @@ func (ur *UserRepository) Create(user *models.User) (*entities.User, error) {
 		return nil, result.Error
 	}
 
-	return user.ToDomainEntity(), nil
+	return user.ToDomainModel(), nil
 }
