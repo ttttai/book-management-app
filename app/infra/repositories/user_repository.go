@@ -53,3 +53,14 @@ func (ur *UserRepository) Delete(id string) error {
 
 	return nil
 }
+
+func (ur *UserRepository) GetByName(name string) (*[]entities.User, error) {
+	var users []entities.User
+
+	result := ur.db.Where("name LIKE ?", "%"+name+"%").Find(&users)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &users, nil
+}

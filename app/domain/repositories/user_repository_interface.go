@@ -9,4 +9,5 @@ type IUserRepository interface {
 	Create(user *entities.User) (*entities.User, error)
 	Update(user *entities.User) (*entities.User, error)
 	Delete(id string) error
+	GetByName(name string) (*[]entities.User, error)
 }

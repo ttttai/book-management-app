@@ -9,7 +9,7 @@ import (
 )
 
 type IUserController interface {
-	GetUser(c *gin.Context)
+	GetById(c *gin.Context)
 	Create(c *gin.Context)
 	Update(c *gin.Context)
 	Delete(c *gin.Context)
@@ -96,4 +96,24 @@ func (uc *UserController) Delete(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, nil)
+}
+
+func (uc *UserController) GetByName(c *gin.Context) {
+	var request dto.GetUserByNameRequestParam
+
+	if err := c.ShouldBindQuery(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	res, err := uc.userUsecase.GetByName(request.Name)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if res == nil {
+		c.JSON(http.StatusNotFound, nil)
+		return
+	}
+	c.JSON(http.StatusOK, res)
 }

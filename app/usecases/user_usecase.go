@@ -11,6 +11,7 @@ type IUserUsecase interface {
 	Create(user dto.CreateUserRequestParam) (*entities.User, error)
 	Update(id dto.UpdateUserRequestPathParam, data dto.UpdateUserRequestBodyParam) (*entities.User, error)
 	Delete(id string) error
+	GetByName(name string) (*[]entities.User, error)
 }
 
 type UserUsecase struct {
@@ -65,4 +66,13 @@ func (uu *UserUsecase) Delete(id string) error {
 	}
 
 	return nil
+}
+
+func (uu *UserUsecase) GetByName(name string) (*[]entities.User, error) {
+	users, err := uu.userRepository.GetByName(name)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
 }

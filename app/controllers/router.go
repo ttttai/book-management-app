@@ -23,6 +23,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 				"message": "ping-pong-pong",
 			})
 		})
+		todo.GET("/search", UserController.GetByName)
 		todo.GET("/:id", UserController.GetById)
 		todo.POST("", UserController.Create)
 		todo.PUT("/:id", UserController.Update)
