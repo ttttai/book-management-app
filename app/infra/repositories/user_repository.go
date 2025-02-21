@@ -3,7 +3,6 @@ package repositories
 import (
 	"github.com/ttttai/golang/domain/entities"
 	"github.com/ttttai/golang/domain/repositories"
-	"github.com/ttttai/golang/infra/models"
 	"gorm.io/gorm"
 )
 
@@ -18,21 +17,30 @@ func NewUserRepository(db *gorm.DB) repositories.IUserRepository {
 }
 
 func (ur *UserRepository) GetById(id string) (*entities.User, error) {
-	var user *models.User
+	var user entities.User
 
-	result := ur.db.First(user, id)
+	result := ur.db.First(&user, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return user.ToDomainModel(), nil
+	return &user, nil
 }
 
-func (ur *UserRepository) Create(user *models.User) (*entities.User, error) {
+func (ur *UserRepository) Create(user *entities.User) (*entities.User, error) {
 	result := ur.db.Create(user)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return user.ToDomainModel(), nil
+	return user, nil
+}
+
+func (ur *UserRepository) Update(user *entities.User) (*entities.User, error) {
+	result := ur.db.Save(user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return user, nil
 }

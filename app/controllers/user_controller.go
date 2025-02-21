@@ -11,6 +11,7 @@ import (
 type IUserController interface {
 	GetUser(c *gin.Context)
 	Create(c *gin.Context)
+	Update(c *gin.Context)
 }
 
 type UserController struct {
@@ -57,4 +58,25 @@ func (uc *UserController) Create(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, res)
+}
+
+func (uc *UserController) Update(c *gin.Context) {
+	var pathParam dto.UpdateUserRequestPathParam
+	var bodyParam dto.UpdateUserRequestBodyParam
+
+	if err := c.ShouldBindUri(&pathParam); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := c.ShouldBindJSON(&bodyParam); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	res, err := uc.userUsecase.Update(pathParam, bodyParam)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, res)
 }

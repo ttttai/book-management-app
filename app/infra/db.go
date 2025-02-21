@@ -17,5 +17,6 @@ func NewDB() (*gorm.DB, error) {
 	// タイムゾーンをJSTに設定
 	loc, _ := time.LoadLocation("Asia/Tokyo")
 	time.Local = loc
+
 	return db, err
 }
