@@ -7,6 +7,7 @@ type User struct {
 	Name      string
 	Email     string
 	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func NewUser(name string, email string) *User {
