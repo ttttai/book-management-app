@@ -44,3 +44,12 @@ func (ur *UserRepository) Update(user *entities.User) (*entities.User, error) {
 
 	return user, nil
 }
+
+func (ur *UserRepository) Delete(id string) error {
+	result := ur.db.Delete(&entities.User{}, id)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

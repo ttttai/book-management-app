@@ -17,3 +17,7 @@ type UpdateUserRequestBodyParam struct {
 	Name  string `json:"name" binding:"required"`
 	Email string `json:"email" binding:"required"`
 }
+
+type DeleteUserRequestParam struct {
+	ID string `uri:"id" binding:"required"`
+}

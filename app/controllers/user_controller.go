@@ -12,6 +12,7 @@ type IUserController interface {
 	GetUser(c *gin.Context)
 	Create(c *gin.Context)
 	Update(c *gin.Context)
+	Delete(c *gin.Context)
 }
 
 type UserController struct {
@@ -79,4 +80,20 @@ func (uc *UserController) Update(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, res)
+}
+
+func (uc *UserController) Delete(c *gin.Context) {
+	var request dto.DeleteUserRequestParam
+
+	if err := c.ShouldBindUri(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := uc.userUsecase.Delete(request.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusNoContent, nil)
 }
