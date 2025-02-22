@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ttttai/golang/domain/services"
 	"github.com/ttttai/golang/infra/repositories"
 	"github.com/ttttai/golang/usecases"
 	"gorm.io/gorm"
@@ -31,12 +32,13 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	}
 
 	bookRepository := repositories.NewBookRepository(db)
-	bookUsecase := usecases.NewBookUsecase(bookRepository)
+	bookService := services.NewBookService(bookRepository)
+	bookUsecase := usecases.NewBookUsecase(bookService)
 	bookController := NewBookController(bookUsecase)
 
 	book := r.Group("/book")
 	{
-		book.GET("/search", bookController.GetBooks)
+		book.GET("/search", bookController.SearchBooks)
 	}
 
 	return r

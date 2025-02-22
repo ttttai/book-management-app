@@ -2,25 +2,25 @@ package usecases
 
 import (
 	"github.com/ttttai/golang/domain/entities"
-	"github.com/ttttai/golang/domain/repositories"
+	"github.com/ttttai/golang/domain/services"
 )
 
 type IBookUsecase interface {
-	GetBooks(title string, maxNum int) (*[]entities.Book, error)
+	SearchBooks(title string, maxNum int) (*[]entities.Book, error)
 }
 
 type BookUsecase struct {
-	bookRepository repositories.IBookRepository
+	bookService services.IBookService
 }
 
-func NewBookUsecase(bookRepository repositories.IBookRepository) IBookUsecase {
+func NewBookUsecase(bookService services.IBookService) IBookUsecase {
 	return &BookUsecase{
-		bookRepository: bookRepository,
+		bookService: bookService,
 	}
 }
 
-func (bu *BookUsecase) GetBooks(title string, maxNum int) (*[]entities.Book, error) {
-	books, err := bu.bookRepository.GetBooksFromNdlApi(title, maxNum)
+func (bu *BookUsecase) SearchBooks(title string, maxNum int) (*[]entities.Book, error) {
+	books, err := bu.bookService.SearchBooks(title, maxNum)
 	if err != nil {
 		return nil, err
 	}

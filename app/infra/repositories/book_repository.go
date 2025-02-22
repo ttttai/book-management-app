@@ -127,3 +127,12 @@ func (br *BookRepository) GetBooksFromNdlApi(title string, maxNum int) (*[]entit
 
 	return &books, nil
 }
+
+func (br *BookRepository) Create(books *[]entities.Book) (*[]entities.Book, error) {
+	result := br.db.Create(books)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return books, nil
+}

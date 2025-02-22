@@ -9,7 +9,7 @@ import (
 )
 
 type IBookController interface {
-	GetBooks(c *gin.Context)
+	SearchBooks(c *gin.Context)
 }
 
 type BookController struct {
@@ -22,14 +22,14 @@ func NewBookController(bookUsecase usecases.IBookUsecase) IBookController {
 	}
 }
 
-func (bc *BookController) GetBooks(c *gin.Context) {
+func (bc *BookController) SearchBooks(c *gin.Context) {
 	var request dto.GetBookRequestParam
 
 	if err := c.ShouldBindQuery(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
-	res, err := bc.bookUsecase.GetBooks(request.Title, request.MaxNum)
+	res, err := bc.bookUsecase.SearchBooks(request.Title, request.MaxNum)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
