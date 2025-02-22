@@ -13,13 +13,14 @@ type IUserController interface {
 	Create(c *gin.Context)
 	Update(c *gin.Context)
 	Delete(c *gin.Context)
+	GetByName(c *gin.Context)
 }
 
 type UserController struct {
 	userUsecase usecases.IUserUsecase
 }
 
-func NewUserController(userUsecase usecases.IUserUsecase) *UserController {
+func NewUserController(userUsecase usecases.IUserUsecase) IUserController {
 	return &UserController{
 		userUsecase: userUsecase,
 	}

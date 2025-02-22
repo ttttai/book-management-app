@@ -14,20 +14,29 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 
 	userRepository := repositories.NewUserRepository(db)
 	userUsecase := usecases.NweUserUsecase(userRepository)
-	UserController := NewUserController(userUsecase)
+	userController := NewUserController(userUsecase)
 
-	todo := r.Group("/user")
+	user := r.Group("/user")
 	{
-		todo.GET("", func(c *gin.Context) {
+		user.GET("", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
 				"message": "ping-pong-pong",
 			})
 		})
-		todo.GET("/search", UserController.GetByName)
-		todo.GET("/:id", UserController.GetById)
-		todo.POST("", UserController.Create)
-		todo.PUT("/:id", UserController.Update)
-		todo.DELETE("/:id", UserController.Delete)
+		user.GET("/search", userController.GetByName)
+		user.GET("/:id", userController.GetById)
+		user.POST("", userController.Create)
+		user.PUT("/:id", userController.Update)
+		user.DELETE("/:id", userController.Delete)
+	}
+
+	bookRepository := repositories.NewBookRepository(db)
+	bookUsecase := usecases.NewBookUsecase(bookRepository)
+	bookController := NewBookController(bookUsecase)
+
+	book := r.Group("/book")
+	{
+		book.GET("/search", bookController.GetBooks)
 	}
 
 	return r
