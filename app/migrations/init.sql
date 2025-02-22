@@ -13,11 +13,13 @@ INSERT INTO users (name, email) VALUES
 
 CREATE TABLE books (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    isbn INT,
+    isbn BIGINT,
     title_name VARCHAR(255),
     title_name_kana VARCHAR(255),
     price INT,
-    publish_data DATE,
+    publisher_name VARCHAR(255),
+    publisher_name_kana VARCHAR(255),
+    publish_date DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 )

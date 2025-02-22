@@ -48,7 +48,7 @@ type XML struct {
 						Name     string `xml:"http://xmlns.com/foaf/0.1/ name"`
 						NameKana string `xml:"http://ndl.go.jp/dcndl/terms/ transcription"`
 					} `xml:"http://xmlns.com/foaf/0.1/ Agent"`
-					Date string `xml:"http://purl.org/dc/terms/ date"`
+					Date *string `xml:"http://purl.org/dc/terms/ date"`
 				} `xml:"http://purl.org/dc/terms/ publisher"`
 				Subjects []struct {
 					Descriptions struct {
@@ -62,8 +62,8 @@ type XML struct {
 	} `xml:"records>record>recordData"`
 }
 
-func (br *BookRepository) GetBooksFromNdlApi(title string, maxNum int) (*[]entities.Book, error) {
-	var books []entities.Book
+func (br *BookRepository) GetBooksFromNdlApi(title string, maxNum int) (*[]entities.BookInfo, error) {
+	var bookInfo []entities.BookInfo
 
 	encodedTitle := url.PathEscape(title)
 	res, err := http.Get(NDL_SEARCH_API_URL + "?operation=searchRetrieve" + "&recordPacking=xml" + "&recordSchema=dcndl" + "&maximumRecords=" + strconv.Itoa(maxNum) + "&query=title=" + encodedTitle)
@@ -112,23 +112,27 @@ func (br *BookRepository) GetBooksFromNdlApi(title string, maxNum int) (*[]entit
 
 		book := entities.Book{
 			ISBN:              isbn,
-			TitleName:         record.Record.BibResource.Title.Description.TitleName,
-			TitleKana:         record.Record.BibResource.Title.Description.TitleKana,
-			Authors:           authors,
-			PublisherName:     record.Record.BibResource.Publisher.Agent.Name,
-			PublisherNameKana: record.Record.BibResource.Publisher.Agent.NameKana,
-			PublishDate:       record.Record.BibResource.Publisher.Date,
-			Subjects:          subjects,
+			TitleName:         bibResource.Title.Description.TitleName,
+			TitleNameKana:     bibResource.Title.Description.TitleKana,
+			PublisherName:     bibResource.Publisher.Agent.Name,
+			PublisherNameKana: bibResource.Publisher.Agent.NameKana,
+			PublishDate:       bibResource.Publisher.Date,
 			Price:             price,
 		}
 
-		books = append(books, book)
+		bookInfoItem := entities.BookInfo{
+			Book:     book,
+			Authors:  authors,
+			Subjects: subjects,
+		}
+
+		bookInfo = append(bookInfo, bookInfoItem)
 	}
 
-	return &books, nil
+	return &bookInfo, nil
 }
 
-func (br *BookRepository) Create(books *[]entities.Book) (*[]entities.Book, error) {
+func (br *BookRepository) CreateBooks(books *[]entities.Book) (*[]entities.Book, error) {
 	result := br.db.Create(books)
 	if result.Error != nil {
 		return nil, result.Error

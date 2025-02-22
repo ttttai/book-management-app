@@ -6,7 +6,7 @@ import (
 )
 
 type IBookUsecase interface {
-	SearchBooks(title string, maxNum int) (*[]entities.Book, error)
+	SearchBooks(title string, maxNum int) (*[]entities.BookInfo, error)
 }
 
 type BookUsecase struct {
@@ -19,11 +19,11 @@ func NewBookUsecase(bookService services.IBookService) IBookUsecase {
 	}
 }
 
-func (bu *BookUsecase) SearchBooks(title string, maxNum int) (*[]entities.Book, error) {
-	books, err := bu.bookService.SearchBooks(title, maxNum)
+func (bu *BookUsecase) SearchBooks(title string, maxNum int) (*[]entities.BookInfo, error) {
+	bookInfo, err := bu.bookService.SearchBooks(title, maxNum)
 	if err != nil {
 		return nil, err
 	}
 
-	return books, nil
+	return bookInfo, nil
 }
