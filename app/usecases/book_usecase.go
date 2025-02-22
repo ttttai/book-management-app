@@ -6,7 +6,7 @@ import (
 )
 
 type IBookUsecase interface {
-	GetBooks(title string) (*[]entities.Book, error)
+	GetBooks(title string, maxNum int) (*[]entities.Book, error)
 }
 
 type BookUsecase struct {
@@ -19,8 +19,8 @@ func NewBookUsecase(bookRepository repositories.IBookRepository) IBookUsecase {
 	}
 }
 
-func (bu *BookUsecase) GetBooks(title string) (*[]entities.Book, error) {
-	books, err := bu.bookRepository.GetBooksFromNdlApi(title)
+func (bu *BookUsecase) GetBooks(title string, maxNum int) (*[]entities.Book, error) {
+	books, err := bu.bookRepository.GetBooksFromNdlApi(title, maxNum)
 	if err != nil {
 		return nil, err
 	}

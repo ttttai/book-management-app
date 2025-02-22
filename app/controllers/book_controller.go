@@ -29,7 +29,7 @@ func (bc *BookController) GetBooks(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
-	res, err := bc.bookUsecase.GetBooks(request.Title)
+	res, err := bc.bookUsecase.GetBooks(request.Title, request.MaxNum)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

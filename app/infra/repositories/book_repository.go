@@ -13,6 +13,8 @@ import (
 	"gorm.io/gorm"
 )
 
+const NDL_SEARCH_API_URL = "https://ndlsearch.ndl.go.jp/api/sru"
+
 type BookRepository struct {
 	db *gorm.DB
 }
@@ -60,13 +62,11 @@ type XML struct {
 	} `xml:"records>record>recordData"`
 }
 
-const NDL_SEARCH_API_URL = "https://ndlsearch.ndl.go.jp/api/sru"
-
-func (br *BookRepository) GetBooksFromNdlApi(title string) (*[]entities.Book, error) {
+func (br *BookRepository) GetBooksFromNdlApi(title string, maxNum int) (*[]entities.Book, error) {
 	var books []entities.Book
 
 	encodedTitle := url.PathEscape(title)
-	res, err := http.Get(NDL_SEARCH_API_URL + "?operation=searchRetrieve" + "&recordPacking=xml" + "&recordSchema=dcndl" + "&maximumRecords=2" + "&query=title=" + encodedTitle)
+	res, err := http.Get(NDL_SEARCH_API_URL + "?operation=searchRetrieve" + "&recordPacking=xml" + "&recordSchema=dcndl" + "&maximumRecords=" + strconv.Itoa(maxNum) + "&query=title=" + encodedTitle)
 
 	if err != nil {
 		return nil, err
