@@ -13,7 +13,7 @@ INSERT INTO users (name, email) VALUES
 
 CREATE TABLE books (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    isbn BIGINT,
+    isbn BIGINT UNIQUE,
     title_name VARCHAR(255),
     title_name_kana VARCHAR(255),
     price INT,
@@ -34,7 +34,7 @@ CREATE TABLE authors (
 
 CREATE TABLE subjects (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    subject VARCHAR(255),
+    subject_name VARCHAR(255),
     subject_kana VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

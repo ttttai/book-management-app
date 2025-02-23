@@ -31,9 +31,15 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		user.DELETE("/:id", userController.Delete)
 	}
 
+	authorRepository := repositories.NewAuthorRepository(db)
+	authorService := services.NewAuthorService(authorRepository)
+
+	subjectRepository := repositories.NewSubjectRepository(db)
+	subjectService := services.NewSubjectService(subjectRepository)
+
 	bookRepository := repositories.NewBookRepository(db)
 	bookService := services.NewBookService(bookRepository)
-	bookUsecase := usecases.NewBookUsecase(bookService)
+	bookUsecase := usecases.NewBookUsecase(bookService, authorService, subjectService)
 	bookController := NewBookController(bookUsecase)
 
 	book := r.Group("/book")

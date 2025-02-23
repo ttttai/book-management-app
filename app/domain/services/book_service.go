@@ -6,7 +6,8 @@ import (
 )
 
 type IBookService interface {
-	SearchBooks(title string, maxNum int) (*[]entities.BookInfo, error)
+	GetBooksFromNdlApi(title string, maxNum int) (*[]entities.BookInfo, error)
+	CreateBooks(books *[]entities.Book) (*[]entities.Book, error)
 }
 
 type BookService struct {
@@ -19,22 +20,28 @@ func NewBookService(bookRepository repositories.IBookRepository) IBookService {
 	}
 }
 
-func (bs *BookService) SearchBooks(title string, maxNum int) (*[]entities.BookInfo, error) {
+func (bs *BookService) GetBooksFromNdlApi(title string, maxNum int) (*[]entities.BookInfo, error) {
 	bookInfo, err := bs.bookRepository.GetBooksFromNdlApi(title, maxNum)
 	if err != nil {
 		return nil, err
 	}
 
-	var books []entities.Book
-
-	for _, bookInfoItem := range *bookInfo {
-		books = append(books, bookInfoItem.Book)
-	}
-
-	_, error := bs.bookRepository.CreateBooks(&books)
-	if error != nil {
-		return nil, error
-	}
-
 	return bookInfo, nil
 }
+
+func (bs *BookService) CreateBooks(books *[]entities.Book) (*[]entities.Book, error) {
+	if len(*books) == 0 {
+		return nil, nil
+	}
+
+	result, err := bs.bookRepository.CreateBooks(books)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, err
+}
+
+// func (bs *BookService) GetBooksByTitle(title string) (*[]entities.Book, error) {
+
+// }
