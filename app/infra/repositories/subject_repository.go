@@ -16,6 +16,15 @@ func NewSubjectRepository(db *gorm.DB) repositories.ISubjectRepository {
 	}
 }
 
+func (sr *SubjectRepository) CreateSubject(subject *entities.Subject) (*entities.Subject, error) {
+	result := sr.db.Create(subject)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return subject, nil
+}
+
 func (sr *SubjectRepository) CreateSubjects(subjects *[]entities.Subject) (*[]entities.Subject, error) {
 	result := sr.db.Create(subjects)
 	if result.Error != nil {
@@ -23,4 +32,15 @@ func (sr *SubjectRepository) CreateSubjects(subjects *[]entities.Subject) (*[]en
 	}
 
 	return subjects, nil
+}
+
+func (sr *SubjectRepository) GetSubjectByName(name string) (*entities.Subject, error) {
+	var subject entities.Subject
+
+	result := sr.db.Where("subject_name = ?", name).First(&subject)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &subject, nil
 }

@@ -132,6 +132,15 @@ func (br *BookRepository) GetBooksFromNdlApi(title string, maxNum int) (*[]entit
 	return &bookInfo, nil
 }
 
+func (br *BookRepository) CreateBook(book *entities.Book) (*entities.Book, error) {
+	result := br.db.Create(book)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return book, nil
+}
+
 func (br *BookRepository) CreateBooks(books *[]entities.Book) (*[]entities.Book, error) {
 	result := br.db.Create(books)
 	if result.Error != nil {
@@ -139,4 +148,33 @@ func (br *BookRepository) CreateBooks(books *[]entities.Book) (*[]entities.Book,
 	}
 
 	return books, nil
+}
+
+func (br *BookRepository) CreateBookAuthors(bookAuthors *[]entities.BookAuthor) (*[]entities.BookAuthor, error) {
+	result := br.db.Create(bookAuthors)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return bookAuthors, nil
+}
+
+func (br *BookRepository) CreateBookSubjects(bookSubjects *[]entities.BookSubject) (*[]entities.BookSubject, error) {
+	result := br.db.Create(bookSubjects)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return bookSubjects, nil
+}
+
+func (br *BookRepository) GetBookByTitle(title string) (*entities.Book, error) {
+	var book entities.Book
+
+	result := br.db.Where("title = ?", title).First(&book)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &book, nil
 }

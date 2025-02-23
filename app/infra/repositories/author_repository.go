@@ -16,6 +16,26 @@ func NewAuthorRepository(db *gorm.DB) repositories.IAuthorRepository {
 	}
 }
 
+func (ar *AuthorRepository) GetAuthorByName(name string) (*entities.Author, error) {
+	var author entities.Author
+
+	result := ar.db.Where("name = ?", name).First(&author)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &author, nil
+}
+
+func (ar *AuthorRepository) CreateAuthor(author *entities.Author) (*entities.Author, error) {
+	result := ar.db.Create(author)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return author, nil
+}
+
 func (ar *AuthorRepository) CreateAuthors(authors *[]entities.Author) (*[]entities.Author, error) {
 	result := ar.db.Create(authors)
 	if result.Error != nil {
