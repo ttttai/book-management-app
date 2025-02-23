@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"encoding/xml"
+	"errors"
 	"io"
 	"net/http"
 	"net/url"
@@ -171,8 +172,11 @@ func (br *BookRepository) CreateBookSubjects(bookSubjects *[]entities.BookSubjec
 func (br *BookRepository) GetBookByTitle(title string) (*entities.Book, error) {
 	var book entities.Book
 
-	result := br.db.Where("title = ?", title).First(&book)
+	result := br.db.Where("title_name = ?", title).First(&book)
 	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, result.Error
 	}
 

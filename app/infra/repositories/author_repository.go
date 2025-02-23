@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"errors"
+
 	"github.com/ttttai/golang/domain/entities"
 	"github.com/ttttai/golang/domain/repositories"
 	"gorm.io/gorm"
@@ -21,6 +23,9 @@ func (ar *AuthorRepository) GetAuthorByName(name string) (*entities.Author, erro
 
 	result := ar.db.Where("name = ?", name).First(&author)
 	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, result.Error
 	}
 

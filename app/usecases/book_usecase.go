@@ -30,7 +30,17 @@ func (bu *BookUsecase) SearchBooks(title string, maxNum int) (*[]entities.BookIn
 		return nil, err
 	}
 
+	var excludedBookInfo []entities.BookInfo
 	for _, bookInfoItem := range *bookInfo {
+		book, err := bu.bookService.GetBookByTitle(bookInfoItem.Book.TitleName)
+		if err != nil {
+			return nil, err
+		}
+		if book == nil {
+			excludedBookInfo = append(excludedBookInfo, bookInfoItem)
+		}
+	}
+	for _, bookInfoItem := range excludedBookInfo {
 		newBook, err := bu.bookService.CreateBook(&bookInfoItem.Book)
 		if err != nil {
 			return nil, err
