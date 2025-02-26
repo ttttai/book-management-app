@@ -12,4 +12,8 @@ app/data
 
 app/tmp
 
+app/.env
+
+app/.env.test
+
 .vscode

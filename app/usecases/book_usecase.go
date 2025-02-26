@@ -24,14 +24,19 @@ func NewBookUsecase(bookService services.IBookService, authorService services.IA
 }
 
 func (bu *BookUsecase) SearchBooks(title string, maxNum int) (*[]entities.BookInfo, error) {
+	// var bookInfo []entities.BookInfo
+
 	// TODO:データベースから取得して足りない分をAPIで除外検索
-	bookInfo, err := bu.bookService.GetBooksFromNdlApi(title, maxNum)
+	bookInfoFromApi, err := bu.bookService.GetBooksFromNdlApi(title, maxNum)
 	if err != nil {
 		return nil, err
 	}
 
+	// tmp, err := bu.bookService.GetBookInfoByISBN([]int{25, 26, 27})
+	// fmt.Println(tmp)
+
 	var excludedBookInfo []entities.BookInfo
-	for _, bookInfoItem := range *bookInfo {
+	for _, bookInfoItem := range *bookInfoFromApi {
 		book, err := bu.bookService.GetBookByISBN(bookInfoItem.Book.ISBN)
 		if err != nil {
 			return nil, err
@@ -66,5 +71,5 @@ func (bu *BookUsecase) SearchBooks(title string, maxNum int) (*[]entities.BookIn
 		}
 	}
 
-	return bookInfo, nil
+	return bookInfoFromApi, nil
 }

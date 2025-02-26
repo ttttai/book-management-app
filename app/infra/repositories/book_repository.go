@@ -3,6 +3,7 @@ package repositories
 import (
 	"encoding/xml"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
@@ -16,6 +17,8 @@ import (
 
 const NDL_SEARCH_API_URL = "https://ndlsearch.ndl.go.jp/api/sru"
 const ISBN_URL = "http://ndl.go.jp/dcndl/terms/ISBN"
+const OLD_ISBN_LEN = 10
+const NEW_ISBN_LEN = 13
 
 type BookRepository struct {
 	db *gorm.DB
@@ -97,7 +100,7 @@ func (br *BookRepository) GetBooksFromNdlApi(title string, maxNum int) (*[]entit
 			if identifier.Datatype == ISBN_URL {
 				isbnValue := identifier.Value
 				isbnStr := strings.ReplaceAll(isbnValue, "-", "")
-				if len(isbnStr) != 10 && len(isbnStr) != 13 {
+				if len(isbnStr) != OLD_ISBN_LEN && len(isbnStr) != NEW_ISBN_LEN {
 					continue
 				}
 				isbn, err = strconv.Atoi(isbnStr)
@@ -215,4 +218,17 @@ func (br *BookRepository) GetBookByISBN(isbn int) (*entities.Book, error) {
 	}
 
 	return &book, nil
+}
+
+func (br *BookRepository) GetBookInfoByISBN(isbnSlices []int) (*[]entities.BookInfo, error) {
+	var bookInfo []entities.BookInfo
+	var book []entities.Book
+
+	result := br.db.Preload("Authors").Preload("Subjects").Where("isbn IN ?", isbnSlices).Find(&book)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	fmt.Println(book)
+
+	return &bookInfo, nil
 }

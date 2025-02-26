@@ -10,4 +10,5 @@ type IBookRepository interface {
 	CreateBookSubjects(bookSubjects *[]entities.BookSubject) (*[]entities.BookSubject, error)
 	GetBooksByTitle(title string) (*[]entities.Book, error)
 	GetBookByISBN(isbn int) (*entities.Book, error)
+	GetBookInfoByISBN(isbnSlices []int) (*[]entities.BookInfo, error)
 }
