@@ -3,6 +3,7 @@ package repositories
 import (
 	"github.com/ttttai/golang/domain/entities"
 	"github.com/ttttai/golang/domain/repositories"
+	"github.com/ttttai/golang/infra/models"
 	"gorm.io/gorm"
 )
 
@@ -17,32 +18,34 @@ func NewUserRepository(db *gorm.DB) repositories.IUserRepository {
 }
 
 func (ur *UserRepository) GetById(id string) (*entities.User, error) {
-	var user entities.User
+	var user models.User
 
 	result := ur.db.First(&user, id)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return &user, nil
+	return models.ToUserDomainModel(&user), nil
 }
 
 func (ur *UserRepository) Create(user *entities.User) (*entities.User, error) {
-	result := ur.db.Create(user)
+	userModel := models.FromUserDomainModel(user)
+	result := ur.db.Create(userModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return user, nil
+	return models.ToUserDomainModel(userModel), nil
 }
 
 func (ur *UserRepository) Update(user *entities.User) (*entities.User, error) {
-	result := ur.db.Save(user)
+	userModel := models.FromUserDomainModel(user)
+	result := ur.db.Save(userModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return user, nil
+	return models.ToUserDomainModel(userModel), nil
 }
 
 func (ur *UserRepository) Delete(id string) error {
@@ -55,12 +58,12 @@ func (ur *UserRepository) Delete(id string) error {
 }
 
 func (ur *UserRepository) GetByName(name string) (*[]entities.User, error) {
-	var users []entities.User
+	var users []models.User
 
 	result := ur.db.Where("name LIKE ?", "%"+name+"%").Find(&users)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return &users, nil
+	return models.ToUserDomainModels(&users), nil
 }

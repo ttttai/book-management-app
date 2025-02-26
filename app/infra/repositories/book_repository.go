@@ -6,6 +6,7 @@ import (
 
 	"github.com/ttttai/golang/domain/entities"
 	"github.com/ttttai/golang/domain/repositories"
+	"github.com/ttttai/golang/infra/models"
 	"gorm.io/gorm"
 )
 
@@ -20,54 +21,58 @@ func NewBookRepository(db *gorm.DB) repositories.IBookRepository {
 }
 
 func (br *BookRepository) CreateBook(book *entities.Book) (*entities.Book, error) {
-	result := br.db.Create(book)
+	bookModel := models.FromBookDomainModel(book)
+	result := br.db.Create(bookModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return book, nil
+	return models.ToBookDomainModel(bookModel), nil
 }
 
 func (br *BookRepository) CreateBooks(books *[]entities.Book) (*[]entities.Book, error) {
-	result := br.db.Create(books)
+	bookModels := models.FromBookDomainModels(books)
+	result := br.db.Create(bookModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return books, nil
+	return models.ToBookDomainModels(bookModels), nil
 }
 
 func (br *BookRepository) CreateBookAuthors(bookAuthors *[]entities.BookAuthor) (*[]entities.BookAuthor, error) {
-	result := br.db.Create(bookAuthors)
+	bookAuthorModels := models.FromBookAuthorDomainModels(bookAuthors)
+	result := br.db.Create(bookAuthorModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return bookAuthors, nil
+	return models.ToBookAuthorDomainModels(bookAuthorModels), nil
 }
 
 func (br *BookRepository) CreateBookSubjects(bookSubjects *[]entities.BookSubject) (*[]entities.BookSubject, error) {
-	result := br.db.Create(bookSubjects)
+	bookSubjectModels := models.FromBookSubjectDomainModels(bookSubjects)
+	result := br.db.Create(bookSubjectModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return bookSubjects, nil
+	return models.ToBookSubjectDomainModels(bookSubjectModels), nil
 }
 
 func (br *BookRepository) GetBooksByTitle(title string) (*[]entities.Book, error) {
-	var book []entities.Book
+	var book []models.Book
 
 	result := br.db.Where("title_name = ?", title).Find(&book)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return &book, nil
+	return models.ToBookDomainModels(&book), nil
 }
 
 func (br *BookRepository) GetBookByISBN(isbn int) (*entities.Book, error) {
-	var book entities.Book
+	var book models.Book
 
 	result := br.db.Where("isbn = ?", isbn).First(&book)
 	if result.Error != nil {
@@ -77,12 +82,11 @@ func (br *BookRepository) GetBookByISBN(isbn int) (*entities.Book, error) {
 		return nil, result.Error
 	}
 
-	return &book, nil
+	return models.ToBookDomainModel(&book), nil
 }
 
 func (br *BookRepository) GetBookInfoByISBN(isbnSlices []int) (*[]entities.BookInfo, error) {
-	var bookInfo []entities.BookInfo
-	var book []entities.Book
+	var book []models.Book
 
 	result := br.db.Preload("Authors").Preload("Subjects").Where("isbn IN ?", isbnSlices).Find(&book)
 	if result.Error != nil {
@@ -90,5 +94,5 @@ func (br *BookRepository) GetBookInfoByISBN(isbnSlices []int) (*[]entities.BookI
 	}
 	fmt.Println(book)
 
-	return &bookInfo, nil
+	return nil, nil
 }

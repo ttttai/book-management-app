@@ -5,6 +5,7 @@ import (
 
 	"github.com/ttttai/golang/domain/entities"
 	"github.com/ttttai/golang/domain/repositories"
+	"github.com/ttttai/golang/infra/models"
 	"gorm.io/gorm"
 )
 
@@ -19,7 +20,7 @@ func NewAuthorRepository(db *gorm.DB) repositories.IAuthorRepository {
 }
 
 func (ar *AuthorRepository) GetAuthorsByName(name string) (*[]entities.Author, error) {
-	var author []entities.Author
+	var author []models.Author
 
 	result := ar.db.Where("name = ?", name).Find(&author)
 	if result.Error != nil {
@@ -29,23 +30,25 @@ func (ar *AuthorRepository) GetAuthorsByName(name string) (*[]entities.Author, e
 		return nil, result.Error
 	}
 
-	return &author, nil
+	return models.ToAuthorDomainModels(&author), nil
 }
 
 func (ar *AuthorRepository) CreateAuthor(author *entities.Author) (*entities.Author, error) {
-	result := ar.db.Create(author)
+	authorModel := models.FromAuthorDomainModel(author)
+	result := ar.db.Create(authorModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return author, nil
+	return models.ToAuthorDomainModel(authorModel), nil
 }
 
 func (ar *AuthorRepository) CreateAuthors(authors *[]entities.Author) (*[]entities.Author, error) {
-	result := ar.db.Create(authors)
+	authorModels := models.FromAuthorDomainModels(authors)
+	result := ar.db.Create(authorModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return authors, nil
+	return models.ToAuthorDomainModels(authorModels), nil
 }

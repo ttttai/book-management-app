@@ -356,6 +356,7 @@ func TestSearchBooksOK(t *testing.T) {
 	assert.Equal(t, expectedBookSubjects, bookSubjects)
 }
 
+// すでにDBに値が存在している場合の検索
 func TestSearchBooksAlreadyRecordsExistOK(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	db, _ := infra.NewTestDB()

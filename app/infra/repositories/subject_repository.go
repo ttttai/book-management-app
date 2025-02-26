@@ -5,6 +5,7 @@ import (
 
 	"github.com/ttttai/golang/domain/entities"
 	"github.com/ttttai/golang/domain/repositories"
+	"github.com/ttttai/golang/infra/models"
 	"gorm.io/gorm"
 )
 
@@ -19,25 +20,27 @@ func NewSubjectRepository(db *gorm.DB) repositories.ISubjectRepository {
 }
 
 func (sr *SubjectRepository) CreateSubject(subject *entities.Subject) (*entities.Subject, error) {
-	result := sr.db.Create(subject)
+	subjectModel := models.FromSubjectDomainModel(subject)
+	result := sr.db.Create(subjectModel)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return subject, nil
+	return models.ToSubjectDomainModel(subjectModel), nil
 }
 
 func (sr *SubjectRepository) CreateSubjects(subjects *[]entities.Subject) (*[]entities.Subject, error) {
-	result := sr.db.Create(subjects)
+	subjectModels := models.FromSubjectDomainModels(subjects)
+	result := sr.db.Create(subjectModels)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
-	return subjects, nil
+	return models.ToSubjectDomainModels(subjectModels), nil
 }
 
 func (sr *SubjectRepository) GetSubjectsByName(name string) (*[]entities.Subject, error) {
-	var subject []entities.Subject
+	var subject []models.Subject
 
 	result := sr.db.Where("subject_name = ?", name).Find(&subject)
 	if result.Error != nil {
@@ -47,5 +50,5 @@ func (sr *SubjectRepository) GetSubjectsByName(name string) (*[]entities.Subject
 		return nil, result.Error
 	}
 
-	return &subject, nil
+	return models.ToSubjectDomainModels(&subject), nil
 }
