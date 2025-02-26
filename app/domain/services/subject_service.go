@@ -8,7 +8,7 @@ import (
 type ISubjectService interface {
 	CreateSubject(subject *entities.Subject) (*entities.Subject, error)
 	CreateSubjects(subjects *[]entities.Subject) (*[]entities.Subject, error)
-	GetSubjectByName(name string) (*entities.Subject, error)
+	GetSubjectsByName(name string) (*[]entities.Subject, error)
 	GetBookSubjectRelations(book *entities.Book, subjects *[]entities.Subject) (*[]entities.BookSubject, error)
 }
 
@@ -44,8 +44,8 @@ func (ss *SubjectService) CreateSubjects(subjects *[]entities.Subject) (*[]entit
 	return result, nil
 }
 
-func (ss *SubjectService) GetSubjectByName(name string) (*entities.Subject, error) {
-	result, err := ss.subjectRepository.GetSubjectByName(name)
+func (ss *SubjectService) GetSubjectsByName(name string) (*[]entities.Subject, error) {
+	result, err := ss.subjectRepository.GetSubjectsByName(name)
 	if err != nil {
 		return nil, err
 	}
@@ -61,15 +61,15 @@ func (ss *SubjectService) GetBookSubjectRelations(book *entities.Book, subjects 
 		}
 
 		var subjectID int
-		existingSubject, _ := ss.GetSubjectByName(subject.SubjectName)
-		if existingSubject == nil {
+		existingSubject, _ := ss.GetSubjectsByName(subject.SubjectName)
+		if len(*existingSubject) == 0 {
 			newSubject, err := ss.CreateSubject(&subject)
 			if err != nil {
 				return nil, err
 			}
 			subjectID = newSubject.ID
 		} else {
-			subjectID = existingSubject.ID
+			subjectID = (*existingSubject)[0].ID
 		}
 
 		bookSubjectRelations = append(

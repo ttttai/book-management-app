@@ -18,10 +18,10 @@ func NewAuthorRepository(db *gorm.DB) repositories.IAuthorRepository {
 	}
 }
 
-func (ar *AuthorRepository) GetAuthorByName(name string) (*entities.Author, error) {
-	var author entities.Author
+func (ar *AuthorRepository) GetAuthorsByName(name string) (*[]entities.Author, error) {
+	var author []entities.Author
 
-	result := ar.db.Where("name = ?", name).First(&author)
+	result := ar.db.Where("name = ?", name).Find(&author)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, nil

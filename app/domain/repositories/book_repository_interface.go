@@ -8,5 +8,6 @@ type IBookRepository interface {
 	CreateBook(book *entities.Book) (*entities.Book, error)
 	CreateBookAuthors(bookAuthors *[]entities.BookAuthor) (*[]entities.BookAuthor, error)
 	CreateBookSubjects(bookSubjects *[]entities.BookSubject) (*[]entities.BookSubject, error)
-	GetBookByTitle(title string) (*entities.Book, error)
+	GetBooksByTitle(title string) (*[]entities.Book, error)
+	GetBookByISBN(isbn int) (*entities.Book, error)
 }

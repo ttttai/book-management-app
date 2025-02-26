@@ -36,10 +36,10 @@ func (sr *SubjectRepository) CreateSubjects(subjects *[]entities.Subject) (*[]en
 	return subjects, nil
 }
 
-func (sr *SubjectRepository) GetSubjectByName(name string) (*entities.Subject, error) {
-	var subject entities.Subject
+func (sr *SubjectRepository) GetSubjectsByName(name string) (*[]entities.Subject, error) {
+	var subject []entities.Subject
 
-	result := sr.db.Where("subject_name = ?", name).First(&subject)
+	result := sr.db.Where("subject_name = ?", name).Find(&subject)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, nil

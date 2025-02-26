@@ -1,6 +1,8 @@
 package services
 
 import (
+	"fmt"
+
 	"github.com/ttttai/golang/domain/entities"
 	"github.com/ttttai/golang/domain/repositories"
 )
@@ -8,7 +10,7 @@ import (
 type IAuthorService interface {
 	CreateAuthor(author *entities.Author) (*entities.Author, error)
 	CreateAuthors(authors *[]entities.Author) (*[]entities.Author, error)
-	GetAuthorByName(name string) (*entities.Author, error)
+	GetAuthorsByName(name string) (*[]entities.Author, error)
 	GetBookAuthorRelations(book *entities.Book, authors *[]entities.Author) (*[]entities.BookAuthor, error)
 }
 
@@ -44,8 +46,8 @@ func (as *AuthorService) CreateAuthors(authors *[]entities.Author) (*[]entities.
 	return result, nil
 }
 
-func (as *AuthorService) GetAuthorByName(name string) (*entities.Author, error) {
-	result, err := as.authorRepository.GetAuthorByName(name)
+func (as *AuthorService) GetAuthorsByName(name string) (*[]entities.Author, error) {
+	result, err := as.authorRepository.GetAuthorsByName(name)
 	if err != nil {
 		return nil, err
 	}
@@ -61,15 +63,16 @@ func (as *AuthorService) GetBookAuthorRelations(book *entities.Book, authors *[]
 		}
 
 		var authorID int
-		existingAuthor, _ := as.GetAuthorByName(author.Name)
-		if existingAuthor == nil {
+		existingAuthor, _ := as.GetAuthorsByName(author.Name)
+		if len(*existingAuthor) == 0 {
 			newAuthor, err := as.CreateAuthor(&author)
 			if err != nil {
 				return nil, err
 			}
 			authorID = newAuthor.ID
 		} else {
-			authorID = existingAuthor.ID
+			authorID = (*existingAuthor)[0].ID
+			fmt.Println(authorID)
 		}
 
 		bookAuthorRelations = append(

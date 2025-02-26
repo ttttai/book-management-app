@@ -15,6 +15,7 @@ import (
 )
 
 const NDL_SEARCH_API_URL = "https://ndlsearch.ndl.go.jp/api/sru"
+const ISBN_URL = "http://ndl.go.jp/dcndl/terms/ISBN"
 
 type BookRepository struct {
 	db *gorm.DB
@@ -31,7 +32,10 @@ type XML struct {
 	Records []struct {
 		Record struct {
 			BibResource struct {
-				ISBN  string `xml:"http://purl.org/dc/terms/ identifier"`
+				Identifiers []struct {
+					Value    string `xml:",chardata"`
+					Datatype string `xml:"http://www.w3.org/1999/02/22-rdf-syntax-ns# datatype,attr"`
+				} `xml:"http://purl.org/dc/terms/ identifier"`
 				Title struct {
 					Description struct {
 						TitleName string `xml:"http://www.w3.org/1999/02/22-rdf-syntax-ns# value"`
@@ -87,8 +91,27 @@ func (br *BookRepository) GetBooksFromNdlApi(title string, maxNum int) (*[]entit
 	for _, record := range result.Records {
 		bibResource := record.Record.BibResource
 
-		isbnStr := strings.ReplaceAll(bibResource.ISBN, "-", "")
-		isbn, _ := strconv.Atoi(isbnStr)
+		var isbn int
+		existsIsbn := false
+		for _, identifier := range bibResource.Identifiers {
+			if identifier.Datatype == ISBN_URL {
+				isbnValue := identifier.Value
+				isbnStr := strings.ReplaceAll(isbnValue, "-", "")
+				if len(isbnStr) != 10 && len(isbnStr) != 13 {
+					continue
+				}
+				isbn, err = strconv.Atoi(isbnStr)
+				if err != nil {
+					return nil, err
+				}
+				existsIsbn = true
+				break
+			}
+		}
+
+		if !existsIsbn {
+			continue
+		}
 
 		priceStr := strings.ReplaceAll(bibResource.Price, "円", "")
 		price, _ := strconv.Atoi(priceStr)
@@ -169,10 +192,21 @@ func (br *BookRepository) CreateBookSubjects(bookSubjects *[]entities.BookSubjec
 	return bookSubjects, nil
 }
 
-func (br *BookRepository) GetBookByTitle(title string) (*entities.Book, error) {
+func (br *BookRepository) GetBooksByTitle(title string) (*[]entities.Book, error) {
+	var book []entities.Book
+
+	result := br.db.Where("title_name = ?", title).Find(&book)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &book, nil
+}
+
+func (br *BookRepository) GetBookByISBN(isbn int) (*entities.Book, error) {
 	var book entities.Book
 
-	result := br.db.Where("title_name = ?", title).First(&book)
+	result := br.db.Where("isbn = ?", isbn).First(&book)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, nil

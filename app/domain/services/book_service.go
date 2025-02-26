@@ -11,16 +11,22 @@ type IBookService interface {
 	CreateBooks(books *[]entities.Book) (*[]entities.Book, error)
 	CreateBookAuthors(bookAuthors *[]entities.BookAuthor) (*[]entities.BookAuthor, error)
 	CreateBookSubjects(bookSubjects *[]entities.BookSubject) (*[]entities.BookSubject, error)
-	GetBookByTitle(title string) (*entities.Book, error)
+	GetBooksByTitle(title string) (*[]entities.Book, error)
+	GetBookByISBN(isbn int) (*entities.Book, error)
+	// GetBookInfoByBooks(books *[]entities.Book) (*[]entities.BookInfo, error)
 }
 
 type BookService struct {
-	bookRepository repositories.IBookRepository
+	bookRepository    repositories.IBookRepository
+	authorRepository  repositories.IAuthorRepository
+	subjectRepository repositories.ISubjectRepository
 }
 
-func NewBookService(bookRepository repositories.IBookRepository) IBookService {
+func NewBookService(bookRepository repositories.IBookRepository, authorRepository repositories.IAuthorRepository, subjectRepository repositories.ISubjectRepository) IBookService {
 	return &BookService{
-		bookRepository: bookRepository,
+		bookRepository:    bookRepository,
+		authorRepository:  authorRepository,
+		subjectRepository: subjectRepository,
 	}
 }
 
@@ -81,11 +87,28 @@ func (bs *BookService) CreateBookSubjects(bookSubjects *[]entities.BookSubject) 
 	return result, err
 }
 
-func (bs *BookService) GetBookByTitle(title string) (*entities.Book, error) {
-	result, err := bs.bookRepository.GetBookByTitle(title)
+func (bs *BookService) GetBooksByTitle(title string) (*[]entities.Book, error) {
+	result, err := bs.bookRepository.GetBooksByTitle(title)
 	if err != nil {
 		return nil, err
 	}
 
 	return result, nil
 }
+
+func (bs *BookService) GetBookByISBN(isbn int) (*entities.Book, error) {
+	result, err := bs.bookRepository.GetBookByISBN(isbn)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+// func (bs *BookService) GetBookInfoByBooks(books *[]entities.Book) (*[]entities.BookInfo, error) {
+// 	var bookInfo []entities.BookInfo
+
+// 	for _, book := range *books {
+// 		// authors := bs.authorRepository.GetAuthorByName(book.)
+// 	}
+// }

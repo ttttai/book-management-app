@@ -38,7 +38,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	subjectService := services.NewSubjectService(subjectRepository)
 
 	bookRepository := repositories.NewBookRepository(db)
-	bookService := services.NewBookService(bookRepository)
+	bookService := services.NewBookService(bookRepository, authorRepository, subjectRepository)
 	bookUsecase := usecases.NewBookUsecase(bookService, authorService, subjectService)
 	bookController := NewBookController(bookUsecase)
 
