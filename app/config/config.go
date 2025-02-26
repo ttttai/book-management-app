@@ -31,7 +31,6 @@ func LoadEnv(options ...Options) {
 	if modeInitValue.Mode == "test" {
 		envFile = "../.env.test"
 	}
-	fmt.Println(envFile)
 
 	err := godotenv.Load(envFile)
 	if err != nil {

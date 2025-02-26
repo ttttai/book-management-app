@@ -20,18 +20,20 @@ type BookService struct {
 	bookRepository    repositories.IBookRepository
 	authorRepository  repositories.IAuthorRepository
 	subjectRepository repositories.ISubjectRepository
+	ndlApiRepository  repositories.INdlApiRepository
 }
 
-func NewBookService(bookRepository repositories.IBookRepository, authorRepository repositories.IAuthorRepository, subjectRepository repositories.ISubjectRepository) IBookService {
+func NewBookService(bookRepository repositories.IBookRepository, authorRepository repositories.IAuthorRepository, subjectRepository repositories.ISubjectRepository, ndlApiRepository repositories.INdlApiRepository) IBookService {
 	return &BookService{
 		bookRepository:    bookRepository,
 		authorRepository:  authorRepository,
 		subjectRepository: subjectRepository,
+		ndlApiRepository:  ndlApiRepository,
 	}
 }
 
 func (bs *BookService) GetBooksFromNdlApi(title string, maxNum int) (*[]entities.BookInfo, error) {
-	bookInfo, err := bs.bookRepository.GetBooksFromNdlApi(title, maxNum)
+	bookInfo, err := bs.ndlApiRepository.GetBooksFromNdlApi(title, maxNum)
 	if err != nil {
 		return nil, err
 	}

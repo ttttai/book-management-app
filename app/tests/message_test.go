@@ -16,7 +16,7 @@ type GetMessageResponse struct {
 	Message string `json:"message"`
 }
 
-func TestGetMessage(t *testing.T) {
+func TestGetMessageOK(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	db, _ := infra.NewTestDB()
 	r := controllers.SetupRouter(db)
@@ -31,5 +31,5 @@ func TestGetMessage(t *testing.T) {
 	messageJson, _ := json.Marshal(message)
 
 	assert.Equal(t, http.StatusOK, w.Code)
-	assert.JSONEq(t, w.Body.String(), string(messageJson))
+	assert.JSONEq(t, string(messageJson), w.Body.String())
 }
