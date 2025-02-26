@@ -13,7 +13,7 @@ type IBookService interface {
 	CreateBookSubjects(bookSubjects *[]entities.BookSubject) (*[]entities.BookSubject, error)
 	GetBooksByTitle(title string) (*[]entities.Book, error)
 	GetBookByISBN(isbn int) (*entities.Book, error)
-	GetBookInfoByISBN(isbnSlices []int) (*[]entities.BookInfo, error)
+	GetBookInfoByISBNs(isbnSlices []int) (*[]entities.BookInfo, error)
 }
 
 type BookService struct {
@@ -107,8 +107,8 @@ func (bs *BookService) GetBookByISBN(isbn int) (*entities.Book, error) {
 	return result, nil
 }
 
-func (bs *BookService) GetBookInfoByISBN(isbnSlices []int) (*[]entities.BookInfo, error) {
-	result, err := bs.bookRepository.GetBookInfoByISBN(isbnSlices)
+func (bs *BookService) GetBookInfoByISBNs(isbnSlices []int) (*[]entities.BookInfo, error) {
+	result, err := bs.bookRepository.GetBookInfoByISBNs(isbnSlices)
 	if err != nil {
 		return nil, err
 	}

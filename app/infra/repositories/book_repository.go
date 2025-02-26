@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/ttttai/golang/domain/entities"
 	"github.com/ttttai/golang/domain/repositories"
@@ -85,14 +84,22 @@ func (br *BookRepository) GetBookByISBN(isbn int) (*entities.Book, error) {
 	return models.ToBookDomainModel(&book), nil
 }
 
-func (br *BookRepository) GetBookInfoByISBN(isbnSlices []int) (*[]entities.BookInfo, error) {
-	var book []models.Book
+func (br *BookRepository) GetBookInfoByISBNs(isbnSlices []int) (*[]entities.BookInfo, error) {
+	var books []models.Book
+	var bookInfo []entities.BookInfo
 
-	result := br.db.Preload("Authors").Preload("Subjects").Where("isbn IN ?", isbnSlices).Find(&book)
+	result := br.db.Preload("Authors").Preload("Subjects").Where("isbn IN ?", isbnSlices).Find(&books)
 	if result.Error != nil {
 		return nil, result.Error
 	}
-	fmt.Println(book)
 
-	return nil, nil
+	for _, book := range books {
+		bookInfo = append(bookInfo, entities.BookInfo{
+			Book:     *models.ToBookDomainModel(&book),
+			Authors:  *models.ToAuthorDomainModels(&book.Authors),
+			Subjects: *models.ToSubjectDomainModels(&book.Subjects),
+		})
+	}
+
+	return &bookInfo, nil
 }

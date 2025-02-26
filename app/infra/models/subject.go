@@ -20,7 +20,7 @@ func ToSubjectDomainModel(subject *Subject) *entities.Subject {
 	return &entities.Subject{
 		ID:          subject.ID,
 		SubjectName: subject.SubjectName,
-		SubjectKana: subject.SubjectName,
+		SubjectKana: subject.SubjectKana,
 	}
 }
 

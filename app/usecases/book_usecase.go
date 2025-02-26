@@ -24,16 +24,13 @@ func NewBookUsecase(bookService services.IBookService, authorService services.IA
 }
 
 func (bu *BookUsecase) SearchBooks(title string, maxNum int) (*[]entities.BookInfo, error) {
-	// var bookInfo []entities.BookInfo
+	var isbns []int
 
 	// TODO:データベースから取得して足りない分をAPIで除外検索
 	bookInfoFromApi, err := bu.bookService.GetBooksFromNdlApi(title, maxNum)
 	if err != nil {
 		return nil, err
 	}
-
-	// tmp, err := bu.bookService.GetBookInfoByISBN([]int{25, 26, 27})
-	// fmt.Println(tmp)
 
 	var excludedBookInfo []entities.BookInfo
 	for _, bookInfoItem := range *bookInfoFromApi {
@@ -43,6 +40,8 @@ func (bu *BookUsecase) SearchBooks(title string, maxNum int) (*[]entities.BookIn
 		}
 		if book == nil {
 			excludedBookInfo = append(excludedBookInfo, bookInfoItem)
+		} else {
+			isbns = append(isbns, book.ISBN)
 		}
 	}
 
@@ -51,6 +50,7 @@ func (bu *BookUsecase) SearchBooks(title string, maxNum int) (*[]entities.BookIn
 		if err != nil {
 			return nil, err
 		}
+		isbns = append(isbns, newBook.ISBN)
 
 		bookAuthorRelations, err := bu.authorService.GetBookAuthorRelations(newBook, &bookInfoItem.Authors)
 		if err != nil {
@@ -71,5 +71,7 @@ func (bu *BookUsecase) SearchBooks(title string, maxNum int) (*[]entities.BookIn
 		}
 	}
 
-	return bookInfoFromApi, nil
+	bookInfo, err := bu.bookService.GetBookInfoByISBNs(isbns)
+
+	return bookInfo, nil
 }

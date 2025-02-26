@@ -2,6 +2,7 @@ package tests
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -176,30 +177,35 @@ func TestSearchBooksOK(t *testing.T) {
 	expectedResponse := []entities.BookInfo{
 		{
 			Book: entities.Book{
+				ID:                1,
 				ISBN:              1111111111111,
 				TitleName:         "test",
 				TitleNameKana:     "テスト",
 				PublisherName:     "test社",
 				PublisherNameKana: "テストシャ",
-				PublishDate:       &date,
+				PublishDate:       &expectedDateTime,
 				Price:             3000,
 			},
 			Authors: []entities.Author{
 				{
+					ID:       1,
 					Name:     "test_name",
 					NameKana: "テストネーム",
 				},
 				{
+					ID:       2,
 					Name:     "test_name2",
 					NameKana: "テストネーム2",
 				},
 			},
 			Subjects: []entities.Subject{
 				{
+					ID:          1,
 					SubjectName: "test_subject",
 					SubjectKana: "テストサブジェクト",
 				},
 				{
+					ID:          2,
 					SubjectName: "test_subject2",
 					SubjectKana: "テストサブジェクト2",
 				},
@@ -207,30 +213,35 @@ func TestSearchBooksOK(t *testing.T) {
 		},
 		{
 			Book: entities.Book{
+				ID:                2,
 				ISBN:              2222222222222,
 				TitleName:         "test2",
 				TitleNameKana:     "テスト2",
 				PublisherName:     "test2社",
 				PublisherNameKana: "テストシャ2",
-				PublishDate:       &date,
+				PublishDate:       &expectedDateTime,
 				Price:             5000,
 			},
 			Authors: []entities.Author{
 				{
+					ID:       1,
 					Name:     "test_name",
 					NameKana: "テストネーム",
 				},
 				{
+					ID:       3,
 					Name:     "test_name3",
 					NameKana: "テストネーム3",
 				},
 			},
 			Subjects: []entities.Subject{
 				{
+					ID:          2,
 					SubjectName: "test_subject2",
 					SubjectKana: "テストサブジェクト2",
 				},
 				{
+					ID:          3,
 					SubjectName: "test_subject3",
 					SubjectKana: "テストサブジェクト3",
 				},
@@ -371,6 +382,7 @@ func TestSearchBooksAlreadyRecordsExistOK(t *testing.T) {
 	loc, _ := time.LoadLocation("Asia/Tokyo")
 	dateTime, _ := time.ParseInLocation("2006-01-02", date, loc)
 	expectedDateTime := dateTime.Format(time.RFC3339)
+	fmt.Println(expectedDateTime)
 	mockResponse := &[]entities.BookInfo{
 		{
 			Book: entities.Book{
@@ -448,30 +460,35 @@ func TestSearchBooksAlreadyRecordsExistOK(t *testing.T) {
 	expectedResponse := []entities.BookInfo{
 		{
 			Book: entities.Book{
+				ID:                1,
 				ISBN:              1111111111111,
 				TitleName:         "test",
 				TitleNameKana:     "テスト",
 				PublisherName:     "test社",
 				PublisherNameKana: "テストシャ",
-				PublishDate:       &date,
+				PublishDate:       &expectedDateTime,
 				Price:             3000,
 			},
 			Authors: []entities.Author{
 				{
+					ID:       1,
 					Name:     "test_name",
 					NameKana: "テストネーム",
 				},
 				{
+					ID:       2,
 					Name:     "test_name2",
 					NameKana: "テストネーム2",
 				},
 			},
 			Subjects: []entities.Subject{
 				{
+					ID:          1,
 					SubjectName: "test_subject",
 					SubjectKana: "テストサブジェクト",
 				},
 				{
+					ID:          2,
 					SubjectName: "test_subject2",
 					SubjectKana: "テストサブジェクト2",
 				},
@@ -479,30 +496,35 @@ func TestSearchBooksAlreadyRecordsExistOK(t *testing.T) {
 		},
 		{
 			Book: entities.Book{
+				ID:                2,
 				ISBN:              2222222222222,
 				TitleName:         "test2",
 				TitleNameKana:     "テスト2",
 				PublisherName:     "test2社",
 				PublisherNameKana: "テストシャ2",
-				PublishDate:       &date,
+				PublishDate:       &expectedDateTime,
 				Price:             5000,
 			},
 			Authors: []entities.Author{
 				{
+					ID:       1,
 					Name:     "test_name",
 					NameKana: "テストネーム",
 				},
 				{
+					ID:       3,
 					Name:     "test_name3",
 					NameKana: "テストネーム3",
 				},
 			},
 			Subjects: []entities.Subject{
 				{
+					ID:          2,
 					SubjectName: "test_subject2",
 					SubjectKana: "テストサブジェクト2",
 				},
 				{
+					ID:          3,
 					SubjectName: "test_subject3",
 					SubjectKana: "テストサブジェクト3",
 				},
