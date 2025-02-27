@@ -15,6 +15,20 @@ services:
     volumes:
       - ./backend:/go/src/app/backend
     tty: true
+  frontend:
+    container_name: react
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    depends_on:
+      - app
+    ports:
+      - 3000:3000
+    environment:
+      - WATCHPACK_POLLING=true
+    tty: true
+    volumes:
+      - ./frontend:/go/src/app/frontend
   db:
     image: mysql:8.4
     container_name: mysql-db
