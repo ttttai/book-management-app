@@ -42,7 +42,8 @@ func NewBookService(bookRepository repositories.IBookRepository, authorRepositor
 
 const BOOK_STATUS_NOT_PURCHASED = 0
 const BOOK_STATUS_PURCHASED = 1
-const BOOK_STATUS_READ = 2
+const BOOK_STATUS_READING = 2
+const BOOK_STATUS_READ_COMPLETED = 3
 
 func (bs *BookService) GetBooksFromNdlApi(title string, maxNum int) (*[]entities.BookInfo, error) {
 	bookInfo, err := bs.ndlApiRepository.GetBooksFromNdlApi(title, maxNum)
@@ -172,7 +173,8 @@ func (bs *BookService) UpdateBookStatus(id int, bookStatus int) (*entities.Book,
 	bookStatuses := []int{
 		BOOK_STATUS_NOT_PURCHASED,
 		BOOK_STATUS_PURCHASED,
-		BOOK_STATUS_READ,
+		BOOK_STATUS_READING,
+		BOOK_STATUS_READ_COMPLETED,
 	}
 
 	if !slices.Contains(bookStatuses, bookStatus) {
