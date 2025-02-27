@@ -137,3 +137,12 @@ func (br *BookRepository) GetBookInfoByBookIds(ids []int) (*[]entities.BookInfo,
 
 	return &bookInfo, nil
 }
+
+func (br *BookRepository) DeleteBook(id int) error {
+	result := br.db.Delete(&entities.Book{}, id)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}

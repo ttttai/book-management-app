@@ -15,6 +15,7 @@ type IBookController interface {
 	SearchBooks(c *gin.Context)
 	GetBookInfoByBookId(c *gin.Context)
 	CreateBookInfo(c *gin.Context)
+	DeleteBook(c *gin.Context)
 }
 
 type BookController struct {
@@ -88,6 +89,21 @@ func (bc *BookController) CreateBookInfo(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, res)
+}
+
+func (bc *BookController) DeleteBook(c *gin.Context) {
+	var request dto.DeleteBookRequestParam
+
+	if err := c.ShouldBindUri(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	err := bc.bookUsecase.DeleteBook(request.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, nil)
 }
 
 func convertAuthors(authorsParam []dto.AuthorParam) []entities.Author {

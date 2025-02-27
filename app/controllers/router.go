@@ -50,6 +50,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		book.GET("/search", bookController.SearchBooks)
 		book.GET("/:id", bookController.GetBookInfoByBookId)
 		book.POST("", bookController.CreateBookInfo)
+		book.DELETE("/:id", bookController.DeleteBook)
 	}
 
 	return r
@@ -92,6 +93,7 @@ func SetupTestRouter(db *gorm.DB, mockNdlApiRepository repository_interfaces.INd
 		book.GET("/search", bookController.SearchBooks)
 		book.GET("/:id", bookController.GetBookInfoByBookId)
 		book.POST("", bookController.CreateBookInfo)
+		book.DELETE("/:id", bookController.DeleteBook)
 	}
 
 	return r

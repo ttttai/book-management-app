@@ -3,7 +3,6 @@ package tests
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -248,7 +247,6 @@ func TestCreateSameIsbnBookInfoOK(t *testing.T) {
 	r.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
-	fmt.Println(w.Body.String())
 
 	var books []entities.Book
 	var authors []entities.Author

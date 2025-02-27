@@ -16,6 +16,7 @@ type IBookService interface {
 	GetBookByISBN(isbn int) (*entities.Book, error)
 	GetBookInfoByISBNs(isbnSlices []int) (*[]entities.BookInfo, error)
 	GetBookInfoByBookIds(ids []int) (*[]entities.BookInfo, error)
+	DeleteBook(id int) error
 }
 
 type BookService struct {
@@ -133,4 +134,13 @@ func (bs *BookService) GetBookInfoByBookIds(ids []int) (*[]entities.BookInfo, er
 	}
 
 	return result, nil
+}
+
+func (bs *BookService) DeleteBook(id int) error {
+	err := bs.bookRepository.DeleteBook(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

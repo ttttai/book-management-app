@@ -9,6 +9,10 @@ type GetBookInfoRequestParam struct {
 	ID int `uri:"id" binding:"required"`
 }
 
+type DeleteBookRequestParam struct {
+	ID int `uri:"id" binding:"required"`
+}
+
 type CreateBookInfoRequestParam struct {
 	Book     BookParam      `json:"book"`
 	Authors  []AuthorParam  `json:"authors"`

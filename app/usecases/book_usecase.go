@@ -9,6 +9,7 @@ type IBookUsecase interface {
 	SearchBooks(title string, maxNum int) (*[]entities.BookInfo, error)
 	GetBookInfoByBookId(id int) (*entities.BookInfo, error)
 	CreateBookInfo(bookInfo *entities.BookInfo) (*entities.BookInfo, error)
+	DeleteBook(id int) error
 }
 
 type BookUsecase struct {
@@ -119,4 +120,13 @@ func (bu *BookUsecase) CreateBookInfo(bookInfo *entities.BookInfo) (*entities.Bo
 	}
 
 	return &(*bookInfoResponse)[0], nil
+}
+
+func (bu *BookUsecase) DeleteBook(id int) error {
+	err := bu.bookService.DeleteBook(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
