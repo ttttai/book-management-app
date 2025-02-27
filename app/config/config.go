@@ -29,7 +29,8 @@ func LoadEnv(options ...Options) {
 
 	envFile := ".env"
 	if modeInitValue.Mode == "test" {
-		envFile = "../.env.test"
+		// テストファイルから見た階層
+		envFile = "../../.env.test"
 	}
 
 	err := godotenv.Load(envFile)

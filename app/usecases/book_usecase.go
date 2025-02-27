@@ -7,6 +7,8 @@ import (
 
 type IBookUsecase interface {
 	SearchBooks(title string, maxNum int) (*[]entities.BookInfo, error)
+	GetBookInfoByBookId(id int) (*entities.BookInfo, error)
+	CreateBookInfo(bookInfo *entities.BookInfo) (*entities.BookInfo, error)
 }
 
 type BookUsecase struct {
@@ -24,54 +26,97 @@ func NewBookUsecase(bookService services.IBookService, authorService services.IA
 }
 
 func (bu *BookUsecase) SearchBooks(title string, maxNum int) (*[]entities.BookInfo, error) {
-	var isbns []int
+	var bookInfo []entities.BookInfo
 
-	// TODO:データベースから取得して足りない分をAPIで除外検索
-	bookInfoFromApi, err := bu.bookService.GetBooksFromNdlApi(title, maxNum)
+	booksFromDB, err := bu.bookService.GetBooksByFuzzyTitle(title)
 	if err != nil {
 		return nil, err
 	}
 
-	var excludedBookInfo []entities.BookInfo
-	for _, bookInfoItem := range *bookInfoFromApi {
-		book, err := bu.bookService.GetBookByISBN(bookInfoItem.Book.ISBN)
+	if len(*booksFromDB) >= maxNum {
+		// DBにすでにmaxNum個存在している場合、DBから取り出す
+		for i := 0; i < maxNum; i++ {
+			bookInfoItem, err := bu.GetBookInfoByBookId((*booksFromDB)[i].ID)
+			if err != nil {
+				return nil, err
+			}
+			bookInfo = append(bookInfo, *bookInfoItem)
+		}
+	} else {
+		bookInfoFromApi, err := bu.bookService.GetBooksFromNdlApi(title, maxNum)
 		if err != nil {
 			return nil, err
 		}
-		if book == nil {
-			excludedBookInfo = append(excludedBookInfo, bookInfoItem)
-		} else {
-			isbns = append(isbns, book.ISBN)
+
+		// すでにDBに存在している場合、除外
+		var excludedBookInfo []entities.BookInfo
+		for _, bookInfoItem := range *bookInfoFromApi {
+			book, err := bu.bookService.GetBookByISBN(bookInfoItem.Book.ISBN)
+			if err != nil {
+				return nil, err
+			}
+
+			if book == nil {
+				excludedBookInfo = append(excludedBookInfo, bookInfoItem)
+			} else {
+				bookInfoItem, err := bu.GetBookInfoByBookId(book.ID)
+				if err != nil {
+					return nil, err
+				}
+				bookInfo = append(bookInfo, *bookInfoItem)
+			}
+		}
+
+		// DBに登録
+		for _, excludedBookInfoItem := range excludedBookInfo {
+			bookInfoItem, err := bu.CreateBookInfo(&excludedBookInfoItem)
+			if err != nil {
+				return nil, err
+			}
+			bookInfo = append(bookInfo, *bookInfoItem)
 		}
 	}
 
-	for _, bookInfoItem := range excludedBookInfo {
-		newBook, err := bu.bookService.CreateBook(&bookInfoItem.Book)
-		if err != nil {
-			return nil, err
-		}
-		isbns = append(isbns, newBook.ISBN)
+	return &bookInfo, nil
+}
 
-		bookAuthorRelations, err := bu.authorService.GetBookAuthorRelations(newBook, &bookInfoItem.Authors)
-		if err != nil {
-			return nil, err
-		}
-		_, err = bu.bookService.CreateBookAuthors(bookAuthorRelations)
-		if err != nil {
-			return nil, err
-		}
-
-		bookSubjectRelations, err := bu.subjectService.GetBookSubjectRelations(newBook, &bookInfoItem.Subjects)
-		if err != nil {
-			return nil, err
-		}
-		_, err = bu.bookService.CreateBookSubjects(bookSubjectRelations)
-		if err != nil {
-			return nil, err
-		}
+func (bu *BookUsecase) GetBookInfoByBookId(id int) (*entities.BookInfo, error) {
+	book, err := bu.bookService.GetBookInfoByBookIds([]int{id})
+	if err != nil {
+		return nil, err
 	}
 
-	bookInfo, err := bu.bookService.GetBookInfoByISBNs(isbns)
+	return &(*book)[0], nil
+}
 
-	return bookInfo, nil
+func (bu *BookUsecase) CreateBookInfo(bookInfo *entities.BookInfo) (*entities.BookInfo, error) {
+	newBook, err := bu.bookService.CreateBook(&bookInfo.Book)
+	if err != nil {
+		return nil, err
+	}
+
+	bookAuthorRelations, err := bu.authorService.GetBookAuthorRelations(newBook, &bookInfo.Authors)
+	if err != nil {
+		return nil, err
+	}
+	_, err = bu.bookService.CreateBookAuthors(bookAuthorRelations)
+	if err != nil {
+		return nil, err
+	}
+
+	bookSubjectRelations, err := bu.subjectService.GetBookSubjectRelations(newBook, &bookInfo.Subjects)
+	if err != nil {
+		return nil, err
+	}
+	_, err = bu.bookService.CreateBookSubjects(bookSubjectRelations)
+	if err != nil {
+		return nil, err
+	}
+
+	bookInfoResponse, err := bu.bookService.GetBookInfoByBookIds([]int{newBook.ID})
+	if err != nil {
+		return nil, err
+	}
+
+	return &(*bookInfoResponse)[0], nil
 }

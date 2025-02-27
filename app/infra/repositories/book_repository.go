@@ -70,6 +70,17 @@ func (br *BookRepository) GetBooksByTitle(title string) (*[]entities.Book, error
 	return models.ToBookDomainModels(&book), nil
 }
 
+func (br *BookRepository) GetBooksByFuzzyTitle(title string) (*[]entities.Book, error) {
+	var book []models.Book
+
+	result := br.db.Where("title_name LIKE ?", "%"+title+"%").Find(&book)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return models.ToBookDomainModels(&book), nil
+}
+
 func (br *BookRepository) GetBookByISBN(isbn int) (*entities.Book, error) {
 	var book models.Book
 
@@ -91,6 +102,29 @@ func (br *BookRepository) GetBookInfoByISBNs(isbnSlices []int) (*[]entities.Book
 	result := br.db.Preload("Authors").Preload("Subjects").Where("isbn IN ?", isbnSlices).Find(&books)
 	if result.Error != nil {
 		return nil, result.Error
+	}
+
+	for _, book := range books {
+		bookInfo = append(bookInfo, entities.BookInfo{
+			Book:     *models.ToBookDomainModel(&book),
+			Authors:  *models.ToAuthorDomainModels(&book.Authors),
+			Subjects: *models.ToSubjectDomainModels(&book.Subjects),
+		})
+	}
+
+	return &bookInfo, nil
+}
+
+func (br *BookRepository) GetBookInfoByBookIds(ids []int) (*[]entities.BookInfo, error) {
+	var books []models.Book
+	var bookInfo []entities.BookInfo
+
+	result := br.db.Preload("Authors").Preload("Subjects").Where("id IN ?", ids).Find(&books)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	if len(books) == 0 {
+		return nil, gorm.ErrRecordNotFound
 	}
 
 	for _, book := range books {

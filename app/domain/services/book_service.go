@@ -12,8 +12,10 @@ type IBookService interface {
 	CreateBookAuthors(bookAuthors *[]entities.BookAuthor) (*[]entities.BookAuthor, error)
 	CreateBookSubjects(bookSubjects *[]entities.BookSubject) (*[]entities.BookSubject, error)
 	GetBooksByTitle(title string) (*[]entities.Book, error)
+	GetBooksByFuzzyTitle(title string) (*[]entities.Book, error)
 	GetBookByISBN(isbn int) (*entities.Book, error)
 	GetBookInfoByISBNs(isbnSlices []int) (*[]entities.BookInfo, error)
+	GetBookInfoByBookIds(ids []int) (*[]entities.BookInfo, error)
 }
 
 type BookService struct {
@@ -54,7 +56,6 @@ func (bs *BookService) CreateBooks(books *[]entities.Book) (*[]entities.Book, er
 	if len(*books) == 0 {
 		return nil, nil
 	}
-
 	result, err := bs.bookRepository.CreateBooks(books)
 	if err != nil {
 		return nil, err
@@ -98,6 +99,15 @@ func (bs *BookService) GetBooksByTitle(title string) (*[]entities.Book, error) {
 	return result, nil
 }
 
+func (bs *BookService) GetBooksByFuzzyTitle(title string) (*[]entities.Book, error) {
+	result, err := bs.bookRepository.GetBooksByFuzzyTitle(title)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (bs *BookService) GetBookByISBN(isbn int) (*entities.Book, error) {
 	result, err := bs.bookRepository.GetBookByISBN(isbn)
 	if err != nil {
@@ -109,6 +119,15 @@ func (bs *BookService) GetBookByISBN(isbn int) (*entities.Book, error) {
 
 func (bs *BookService) GetBookInfoByISBNs(isbnSlices []int) (*[]entities.BookInfo, error) {
 	result, err := bs.bookRepository.GetBookInfoByISBNs(isbnSlices)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (bs *BookService) GetBookInfoByBookIds(ids []int) (*[]entities.BookInfo, error) {
+	result, err := bs.bookRepository.GetBookInfoByBookIds(ids)
 	if err != nil {
 		return nil, err
 	}
