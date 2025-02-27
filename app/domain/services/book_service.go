@@ -1,8 +1,11 @@
 package services
 
 import (
+	"slices"
+
 	"github.com/ttttai/golang/domain/entities"
 	"github.com/ttttai/golang/domain/repositories"
+	"gorm.io/gorm"
 )
 
 type IBookService interface {
@@ -16,7 +19,9 @@ type IBookService interface {
 	GetBookByISBN(isbn int) (*entities.Book, error)
 	GetBookInfoByISBNs(isbnSlices []int) (*[]entities.BookInfo, error)
 	GetBookInfoByBookIds(ids []int) (*[]entities.BookInfo, error)
+	UpdateBook(book *entities.Book) (*entities.Book, error)
 	DeleteBook(id int) error
+	UpdateBookStatus(id int, bookStatus int) (*entities.Book, error)
 }
 
 type BookService struct {
@@ -34,6 +39,10 @@ func NewBookService(bookRepository repositories.IBookRepository, authorRepositor
 		ndlApiRepository:  ndlApiRepository,
 	}
 }
+
+const BOOK_STATUS_NOT_PURCHASED = 0
+const BOOK_STATUS_PURCHASED = 1
+const BOOK_STATUS_READ = 2
 
 func (bs *BookService) GetBooksFromNdlApi(title string, maxNum int) (*[]entities.BookInfo, error) {
 	bookInfo, err := bs.ndlApiRepository.GetBooksFromNdlApi(title, maxNum)
@@ -136,6 +145,15 @@ func (bs *BookService) GetBookInfoByBookIds(ids []int) (*[]entities.BookInfo, er
 	return result, nil
 }
 
+func (bs *BookService) UpdateBook(book *entities.Book) (*entities.Book, error) {
+	result, err := bs.bookRepository.UpdateBook(book)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (bs *BookService) DeleteBook(id int) error {
 	err := bs.bookRepository.DeleteBook(id)
 	if err != nil {
@@ -143,4 +161,29 @@ func (bs *BookService) DeleteBook(id int) error {
 	}
 
 	return nil
+}
+
+func (bs *BookService) UpdateBookStatus(id int, bookStatus int) (*entities.Book, error) {
+	book, err := bs.bookRepository.GetBookById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	bookStatuses := []int{
+		BOOK_STATUS_NOT_PURCHASED,
+		BOOK_STATUS_PURCHASED,
+		BOOK_STATUS_READ,
+	}
+
+	if !slices.Contains(bookStatuses, bookStatus) {
+		return nil, gorm.ErrInvalidData
+	}
+
+	book.Status = bookStatus
+	result, err := bs.bookRepository.UpdateBook(book)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }

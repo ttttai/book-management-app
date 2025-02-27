@@ -10,7 +10,7 @@ type User struct {
 	ID        int `gorm:"primaryKey"`
 	Name      string
 	Email     string
-	CreatedAt time.Time
+	CreatedAt time.Time `gorm:"<-:create"`
 	UpdatedAt time.Time
 }
 

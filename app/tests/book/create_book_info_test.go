@@ -43,6 +43,7 @@ func TestCreateBookInfoOK(t *testing.T) {
 			PublisherNameKana: "テストシャ",
 			PublishDate:       expectedDateTime,
 			Price:             3000,
+			Status:            0,
 		},
 		Authors: []dto.AuthorParam{
 			{
@@ -81,6 +82,7 @@ func TestCreateBookInfoOK(t *testing.T) {
 			PublisherNameKana: "テストシャ",
 			PublishDate:       &expectedDateTime,
 			Price:             3000,
+			Status:            0,
 		},
 		Authors: []entities.Author{
 			{
@@ -129,6 +131,7 @@ func TestCreateBookInfoOK(t *testing.T) {
 			PublisherNameKana: "テストシャ",
 			PublishDate:       &expectedDateTime,
 			Price:             3000,
+			Status:            0,
 		},
 	}
 	assert.Equal(t, expectedBooks, books)
@@ -218,6 +221,7 @@ func TestCreateSameIsbnBookInfoOK(t *testing.T) {
 			PublisherNameKana: "テストシャ",
 			PublishDate:       expectedDateTime,
 			Price:             3000,
+			Status:            0,
 		},
 		Authors: []dto.AuthorParam{
 			{
@@ -265,6 +269,7 @@ func TestCreateSameIsbnBookInfoOK(t *testing.T) {
 			PublisherNameKana: "テストシャ",
 			PublishDate:       &expectedDateTime,
 			Price:             3000,
+			Status:            0,
 		},
 	}
 	assert.Equal(t, expectedBooks, books)

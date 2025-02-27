@@ -138,6 +138,16 @@ func (br *BookRepository) GetBookInfoByBookIds(ids []int) (*[]entities.BookInfo,
 	return &bookInfo, nil
 }
 
+func (br *BookRepository) UpdateBook(book *entities.Book) (*entities.Book, error) {
+	bookModel := models.FromBookDomainModel(book)
+	result := br.db.Save(bookModel)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return models.ToBookDomainModel(bookModel), nil
+}
+
 func (br *BookRepository) DeleteBook(id int) error {
 	result := br.db.Delete(&entities.Book{}, id)
 	if result.Error != nil {
@@ -145,4 +155,15 @@ func (br *BookRepository) DeleteBook(id int) error {
 	}
 
 	return nil
+}
+
+func (br *BookRepository) GetBookById(id int) (*entities.Book, error) {
+	var book models.Book
+
+	result := br.db.First(&book, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return models.ToBookDomainModel(&book), nil
 }

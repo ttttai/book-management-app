@@ -12,5 +12,7 @@ type IBookRepository interface {
 	GetBookByISBN(isbn int) (*entities.Book, error)
 	GetBookInfoByISBNs(isbnSlices []int) (*[]entities.BookInfo, error)
 	GetBookInfoByBookIds(ids []int) (*[]entities.BookInfo, error)
+	UpdateBook(bookInfo *entities.Book) (*entities.Book, error)
 	DeleteBook(id int) error
+	GetBookById(id int) (*entities.Book, error)
 }

@@ -48,6 +48,7 @@ func TestGetBookInfoByBookIdOK(t *testing.T) {
 			PublisherNameKana: "テストシャ",
 			PublishDate:       &expectedDateTime,
 			Price:             3000,
+			Status:            0,
 		},
 		Authors: []entities.Author{
 			{

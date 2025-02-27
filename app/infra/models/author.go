@@ -10,7 +10,7 @@ type Author struct {
 	ID        int `gorm:"primaryKey"`
 	Name      string
 	NameKana  string
-	CreatedAt time.Time
+	CreatedAt time.Time `gorm:"<-:create"`
 	UpdatedAt time.Time
 
 	Books []Book `gorm:"many2many:book_authors;"`

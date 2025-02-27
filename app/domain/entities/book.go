@@ -9,4 +9,5 @@ type Book struct {
 	PublisherNameKana string
 	PublishDate       *string
 	Price             int
+	Status            int
 }

@@ -17,20 +17,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	userRepository := repositories.NewUserRepository(db)
 	userUsecase := usecases.NweUserUsecase(userRepository)
 	userController := NewUserController(userUsecase)
-
-	user := r.Group("/user")
-	{
-		user.GET("", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"message": "ping-pong-pong",
-			})
-		})
-		user.GET("/search", userController.GetByName)
-		user.GET("/:id", userController.GetById)
-		user.POST("", userController.Create)
-		user.PUT("/:id", userController.Update)
-		user.DELETE("/:id", userController.Delete)
-	}
+	setupUserRoutes(r, userController)
 
 	ndlApiRepository := repositories.NewNdlApiRepository()
 
@@ -44,14 +31,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	bookService := services.NewBookService(bookRepository, authorRepository, subjectRepository, ndlApiRepository)
 	bookUsecase := usecases.NewBookUsecase(bookService, authorService, subjectService)
 	bookController := NewBookController(bookUsecase)
-
-	book := r.Group("/book")
-	{
-		book.GET("/search", bookController.SearchBooks)
-		book.GET("/:id", bookController.GetBookInfoByBookId)
-		book.POST("", bookController.CreateBookInfo)
-		book.DELETE("/:id", bookController.DeleteBook)
-	}
+	setupBookRoutes(r, bookController)
 
 	return r
 }
@@ -62,7 +42,24 @@ func SetupTestRouter(db *gorm.DB, mockNdlApiRepository repository_interfaces.INd
 	userRepository := repositories.NewUserRepository(db)
 	userUsecase := usecases.NweUserUsecase(userRepository)
 	userController := NewUserController(userUsecase)
+	setupUserRoutes(r, userController)
 
+	authorRepository := repositories.NewAuthorRepository(db)
+	authorService := services.NewAuthorService(authorRepository)
+
+	subjectRepository := repositories.NewSubjectRepository(db)
+	subjectService := services.NewSubjectService(subjectRepository)
+
+	bookRepository := repositories.NewBookRepository(db)
+	bookService := services.NewBookService(bookRepository, authorRepository, subjectRepository, mockNdlApiRepository)
+	bookUsecase := usecases.NewBookUsecase(bookService, authorService, subjectService)
+	bookController := NewBookController(bookUsecase)
+	setupBookRoutes(r, bookController)
+
+	return r
+}
+
+func setupUserRoutes(r *gin.Engine, userController IUserController) {
 	user := r.Group("/user")
 	{
 		user.GET("", func(c *gin.Context) {
@@ -76,25 +73,16 @@ func SetupTestRouter(db *gorm.DB, mockNdlApiRepository repository_interfaces.INd
 		user.PUT("/:id", userController.Update)
 		user.DELETE("/:id", userController.Delete)
 	}
+}
 
-	authorRepository := repositories.NewAuthorRepository(db)
-	authorService := services.NewAuthorService(authorRepository)
-
-	subjectRepository := repositories.NewSubjectRepository(db)
-	subjectService := services.NewSubjectService(subjectRepository)
-
-	bookRepository := repositories.NewBookRepository(db)
-	bookService := services.NewBookService(bookRepository, authorRepository, subjectRepository, mockNdlApiRepository)
-	bookUsecase := usecases.NewBookUsecase(bookService, authorService, subjectService)
-	bookController := NewBookController(bookUsecase)
-
+func setupBookRoutes(r *gin.Engine, bookController IBookController) {
 	book := r.Group("/book")
 	{
 		book.GET("/search", bookController.SearchBooks)
 		book.GET("/:id", bookController.GetBookInfoByBookId)
 		book.POST("", bookController.CreateBookInfo)
+		book.PUT("/:id", bookController.UpdateBook)
+		book.PUT("/status/:id", bookController.UpdateBookStatus)
 		book.DELETE("/:id", bookController.DeleteBook)
 	}
-
-	return r
 }

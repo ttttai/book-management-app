@@ -30,6 +30,7 @@ func PrepareData(db *gorm.DB) {
 			PublisherNameKana: "テストシャ",
 			PublishDate:       &date,
 			Price:             3000,
+			Status:            0,
 		},
 	}
 	db.Create(&booksBefore)
@@ -111,6 +112,7 @@ func TestSearchBooksOK(t *testing.T) {
 				PublisherNameKana: "テストシャ",
 				PublishDate:       &date,
 				Price:             3000,
+				Status:            0,
 			},
 			Authors: []entities.Author{
 				{
@@ -142,6 +144,7 @@ func TestSearchBooksOK(t *testing.T) {
 				PublisherNameKana: "テストシャ2",
 				PublishDate:       &date,
 				Price:             5000,
+				Status:            0,
 			},
 			Authors: []entities.Author{
 				{
@@ -185,6 +188,7 @@ func TestSearchBooksOK(t *testing.T) {
 				PublisherNameKana: "テストシャ",
 				PublishDate:       &expectedDateTime,
 				Price:             3000,
+				Status:            0,
 			},
 			Authors: []entities.Author{
 				{
@@ -221,6 +225,7 @@ func TestSearchBooksOK(t *testing.T) {
 				PublisherNameKana: "テストシャ2",
 				PublishDate:       &expectedDateTime,
 				Price:             5000,
+				Status:            0,
 			},
 			Authors: []entities.Author{
 				{
@@ -270,6 +275,7 @@ func TestSearchBooksOK(t *testing.T) {
 			PublisherNameKana: "テストシャ",
 			PublishDate:       &expectedDateTime,
 			Price:             3000,
+			Status:            0,
 		},
 		{
 			ID:                2,
@@ -280,6 +286,7 @@ func TestSearchBooksOK(t *testing.T) {
 			PublisherNameKana: "テストシャ2",
 			PublishDate:       &expectedDateTime,
 			Price:             5000,
+			Status:            0,
 		},
 	}
 	assert.Equal(t, expectedBooks, books)
@@ -393,6 +400,7 @@ func TestSearchBooksAlreadyRecordsExistOK(t *testing.T) {
 				PublisherNameKana: "テストシャ",
 				PublishDate:       &date,
 				Price:             3000,
+				Status:            0,
 			},
 			Authors: []entities.Author{
 				{
@@ -424,6 +432,7 @@ func TestSearchBooksAlreadyRecordsExistOK(t *testing.T) {
 				PublisherNameKana: "テストシャ2",
 				PublishDate:       &date,
 				Price:             5000,
+				Status:            0,
 			},
 			Authors: []entities.Author{
 				{
@@ -468,6 +477,7 @@ func TestSearchBooksAlreadyRecordsExistOK(t *testing.T) {
 				PublisherNameKana: "テストシャ",
 				PublishDate:       &expectedDateTime,
 				Price:             3000,
+				Status:            0,
 			},
 			Authors: []entities.Author{
 				{
@@ -504,6 +514,7 @@ func TestSearchBooksAlreadyRecordsExistOK(t *testing.T) {
 				PublisherNameKana: "テストシャ2",
 				PublishDate:       &expectedDateTime,
 				Price:             5000,
+				Status:            0,
 			},
 			Authors: []entities.Author{
 				{
@@ -553,6 +564,7 @@ func TestSearchBooksAlreadyRecordsExistOK(t *testing.T) {
 			PublisherNameKana: "テストシャ",
 			PublishDate:       &expectedDateTime,
 			Price:             3000,
+			Status:            0,
 		},
 		{
 			ID:                2,
@@ -563,6 +575,7 @@ func TestSearchBooksAlreadyRecordsExistOK(t *testing.T) {
 			PublisherNameKana: "テストシャ2",
 			PublishDate:       &expectedDateTime,
 			Price:             5000,
+			Status:            0,
 		},
 	}
 	assert.Equal(t, expectedBooks, books)
@@ -684,6 +697,7 @@ func TestSearchBooksAlreadyRecordsExistNoApiOK(t *testing.T) {
 				PublisherNameKana: "テストシャ",
 				PublishDate:       &expectedDateTime,
 				Price:             3000,
+				Status:            0,
 			},
 			Authors: []entities.Author{
 				{
@@ -733,6 +747,7 @@ func TestSearchBooksAlreadyRecordsExistNoApiOK(t *testing.T) {
 			PublisherNameKana: "テストシャ",
 			PublishDate:       &expectedDateTime,
 			Price:             3000,
+			Status:            0,
 		},
 	}
 	assert.Equal(t, expectedBooks, books)

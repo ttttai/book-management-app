@@ -20,6 +20,7 @@ CREATE TABLE books (
     publisher_name VARCHAR(255),
     publisher_name_kana VARCHAR(255),
     publish_date DATE,
+    status INT NOT NULL DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );

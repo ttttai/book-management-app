@@ -15,7 +15,8 @@ type Book struct {
 	PublisherNameKana string
 	PublishDate       *string
 	Price             int
-	CreatedAt         time.Time
+	Status            int
+	CreatedAt         time.Time `gorm:"<-:create"`
 	UpdatedAt         time.Time
 
 	Authors  []Author  `gorm:"many2many:book_authors;"`
@@ -32,6 +33,7 @@ func ToBookDomainModel(book *Book) *entities.Book {
 		PublisherNameKana: book.PublisherNameKana,
 		PublishDate:       book.PublishDate,
 		Price:             book.Price,
+		Status:            book.Status,
 	}
 }
 
@@ -53,6 +55,7 @@ func FromBookDomainModel(book *entities.Book) *Book {
 		PublisherNameKana: book.PublisherNameKana,
 		PublishDate:       book.PublishDate,
 		Price:             book.Price,
+		Status:            book.Status,
 	}
 }
 

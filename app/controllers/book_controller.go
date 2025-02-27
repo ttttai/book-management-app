@@ -15,7 +15,9 @@ type IBookController interface {
 	SearchBooks(c *gin.Context)
 	GetBookInfoByBookId(c *gin.Context)
 	CreateBookInfo(c *gin.Context)
+	UpdateBook(c *gin.Context)
 	DeleteBook(c *gin.Context)
+	UpdateBookStatus(c *gin.Context)
 }
 
 type BookController struct {
@@ -91,6 +93,32 @@ func (bc *BookController) CreateBookInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+func (bc *BookController) UpdateBook(c *gin.Context) {
+	var request dto.UpdateBookRequestParam
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	book := &entities.Book{
+		ID:                request.ID,
+		ISBN:              request.ISBN,
+		TitleName:         request.TitleName,
+		TitleNameKana:     request.TitleNameKana,
+		PublisherName:     request.PublisherName,
+		PublisherNameKana: request.PublisherNameKana,
+		PublishDate:       &request.PublishDate,
+		Price:             request.Price,
+	}
+
+	res, err := bc.bookUsecase.UpdateBook(book)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, res)
+}
+
 func (bc *BookController) DeleteBook(c *gin.Context) {
 	var request dto.DeleteBookRequestParam
 
@@ -104,6 +132,25 @@ func (bc *BookController) DeleteBook(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, nil)
+}
+
+func (bc *BookController) UpdateBookStatus(c *gin.Context) {
+	var pathParam dto.UpdateBookStatusRequestPathParam
+	var bodyParam dto.UpdateBookStatusRequestBodyParam
+
+	if err := c.ShouldBindUri(&pathParam); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+	if err := c.ShouldBindJSON(&bodyParam); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	res, err := bc.bookUsecase.UpdateBookStatus(pathParam.ID, bodyParam.Status)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, res)
 }
 
 func convertAuthors(authorsParam []dto.AuthorParam) []entities.Author {

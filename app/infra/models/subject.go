@@ -10,7 +10,7 @@ type Subject struct {
 	ID          int `gorm:"primaryKey"`
 	SubjectName string
 	SubjectKana string
-	CreatedAt   time.Time
+	CreatedAt   time.Time `gorm:"<-:create"`
 	UpdatedAt   time.Time
 
 	Books []Book `gorm:"many2many:book_authors;"`
