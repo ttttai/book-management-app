@@ -4,16 +4,16 @@ docker_test/db/my.cnf
 
 docker_test/tmp
 
-app/.air.toml
+app/backend/.air.toml
 
-app/my.cnf
+app/backend/my.cnf
 
-app/data
+app/backend/data
 
-app/tmp
+app/backend/tmp
 
-app/.env
+app/backend/.env
 
-app/.env.test
+app/backend/.env.test
 
 .vscode

@@ -1,7 +1,9 @@
 services:
   app:
     container_name: go-app
-    build: .
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
     depends_on:
       db:
         condition: service_healthy
@@ -11,7 +13,7 @@ services:
       - 8080:8080
       - 2345:2345 # delveと通信用のポート
     volumes:
-      - ./:/go/src/app
+      - ./backend:/go/src/app/backend
     tty: true
   db:
     image: mysql:8.4
@@ -30,9 +32,9 @@ services:
       retries: 5
       start_period: 20s
     volumes:
-      - ./migrations:/docker-entrypoint-initdb.d
-      - ./my.cnf:/etc/mysql/conf.d/my.cnf
-      - ./data:/var/lib/mysql
+      - ./backend/migrations:/docker-entrypoint-initdb.d
+      - ./backend/my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./backend/data:/var/lib/mysql
   test-db:
     image: mysql:8.4
     container_name: test-mysql-db
@@ -49,5 +51,5 @@ services:
       retries: 5
       start_period: 20s
     volumes:
-      - ./migrations:/docker-entrypoint-initdb.d
-      - ./my.cnf:/etc/mysql/conf.d/my.cnf      
+      - ./backend/migrations:/docker-entrypoint-initdb.d
+      - ./backend/my.cnf:/etc/mysql/conf.d/my.cnf      

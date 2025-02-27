@@ -1,7 +1,7 @@
 services:
   golang:
     container_name: golang
-    build: .
+    build: ./docker/go
     depends_on:
       - db
     ports:
@@ -9,6 +9,20 @@ services:
     volumes:
       - ./:/docker_test
     tty: true
+  react:
+    container_name: react
+    build:
+      context: .
+      dockerfile: ./docker/react/Dockerfile
+    depends_on:
+      - golang
+    ports:
+      - 3000:3000
+    environment:
+      - WATCHPACK_POLLING=true
+    tty: true
+    volumes:
+      - ./frontend:/frontend
   db:
     image: mysql:8.4
     container_name: mysql-db
