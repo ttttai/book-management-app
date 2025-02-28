@@ -2,7 +2,6 @@ package tests
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -389,7 +388,6 @@ func TestSearchBooksAlreadyRecordsExistOK(t *testing.T) {
 	loc, _ := time.LoadLocation("Asia/Tokyo")
 	dateTime, _ := time.ParseInLocation("2006-01-02", date, loc)
 	expectedDateTime := dateTime.Format(time.RFC3339)
-	fmt.Println(expectedDateTime)
 	mockResponse := &[]entities.BookInfo{
 		{
 			Book: entities.Book{

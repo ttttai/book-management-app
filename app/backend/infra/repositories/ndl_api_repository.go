@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -93,7 +94,7 @@ func (br *NdlApiRepository) GetBooksFromNdlApi(title string, maxNum int) (*[]ent
 			if identifier.Datatype == ISBN_URL {
 				isbnValue := identifier.Value
 				isbnStr := strings.ReplaceAll(isbnValue, "-", "")
-				if len(isbnStr) != OLD_ISBN_LEN && len(isbnStr) != NEW_ISBN_LEN {
+				if len(isbnStr) != NEW_ISBN_LEN {
 					continue
 				}
 				isbn, err = strconv.Atoi(isbnStr)
@@ -114,9 +115,10 @@ func (br *NdlApiRepository) GetBooksFromNdlApi(title string, maxNum int) (*[]ent
 
 		var authors []entities.Author
 		for _, author := range bibResource.Authors {
+
 			authors = append(authors, entities.Author{
-				Name:     author.Author.Name,
-				NameKana: author.Author.NameKana,
+				Name:     formatAuthorName(author.Author.Name),
+				NameKana: formatAuthorName(author.Author.NameKana),
 			})
 		}
 
@@ -150,4 +152,15 @@ func (br *NdlApiRepository) GetBooksFromNdlApi(title string, maxNum int) (*[]ent
 	}
 
 	return &bookInfo, nil
+}
+
+func formatAuthorName(input string) string {
+	input = strings.ReplaceAll(input, ",", " ")
+
+	re := regexp.MustCompile(`\d+|pub|-`)
+	input = re.ReplaceAllString(input, "")
+
+	input = strings.Join(strings.Fields(input), " ")
+
+	return input
 }

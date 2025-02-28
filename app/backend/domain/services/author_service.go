@@ -1,8 +1,6 @@
 package services
 
 import (
-	"fmt"
-
 	"github.com/ttttai/golang/domain/entities"
 	"github.com/ttttai/golang/domain/repositories"
 )
@@ -72,7 +70,6 @@ func (as *AuthorService) GetBookAuthorRelations(book *entities.Book, authors *[]
 			authorID = newAuthor.ID
 		} else {
 			authorID = (*existingAuthor)[0].ID
-			fmt.Println(authorID)
 		}
 
 		bookAuthorRelations = append(

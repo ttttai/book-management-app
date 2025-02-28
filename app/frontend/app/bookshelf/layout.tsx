@@ -3,5 +3,5 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <div className="min-h-screen bg-green-100">{children}</div>;
+  return <div className="min-h-screen bg-purple-100">{children}</div>;
 }
