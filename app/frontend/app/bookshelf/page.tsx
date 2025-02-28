@@ -3,40 +3,8 @@
 import { useRouter } from "next/navigation";
 import Header from "../components/header";
 
-// type Book = {
-//   id: number;
-//   isbn: number;
-//   title_name: string;
-//   title_name_kana: string;
-//   publisher_name: string;
-//   publisher_name_kana: string;
-//   publish_date: string;
-//   price: number;
-//   status: number;
-// };
-
-// type Author = {
-//   id: number;
-//   name: string;
-//   name_kana: string;
-// };
-
-// type Subject = {
-//   id: number;
-//   subject_name: string;
-//   subject_kana: string;
-// };
-
-// type BookInfo = {
-//   book: Book;
-//   authors: Author[];
-//   subjects: Subject[];
-// };
-
 export default function BookshelfPage() {
   const router = useRouter();
-  //   let data = await fetch("http://localhost:8080/book/1");
-  //   let bookInfo: BookInfo = data.json();
 
   return (
     <div>
