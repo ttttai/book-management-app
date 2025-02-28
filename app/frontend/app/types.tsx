@@ -7,7 +7,7 @@ type Book = {
   publisherNameKana: string;
   publishDate: string;
   price: number;
-  status: number;
+  status: 0 | 1 | 2 | 3;
 };
 
 type Author = {

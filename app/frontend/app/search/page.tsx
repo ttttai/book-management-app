@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import Loading from "./loading";
 import { useRouter } from "next/navigation";
+import { BOOK_STATUS_LABELS, BOOK_STATUS_COLORS } from "../constants";
 
 export default function SearchPage() {
   const [bookInfo, setBookInfo] = useState<BookInfo[]>([]);
@@ -55,6 +56,7 @@ export default function SearchPage() {
         <input
           type="text"
           placeholder="検索..."
+          maxLength={40}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -98,7 +100,7 @@ export default function SearchPage() {
                           className="w-full h-full object-contain"
                         />
                       </div>
-                      <div className="mt-3 text-center">
+                      <div className="mt-3 text-center flex flex-col flex-grow">
                         <div className="text-md font-semibold">
                           {bookInfoItem.book.titleName}
                         </div>
@@ -117,6 +119,15 @@ export default function SearchPage() {
                         <div className="text-sm text-gray-600">
                           ISBN: {bookInfoItem.book.isbn}
                         </div>
+                      </div>
+                      <div className="mt-auto">
+                        <span
+                          className={`inline-block px-3 py-1 rounded-md text-white ${
+                            BOOK_STATUS_COLORS[bookInfoItem.book.status]
+                          }`}
+                        >
+                          {BOOK_STATUS_LABELS[bookInfoItem.book.status]}
+                        </span>
                       </div>
                     </div>
                   ))}

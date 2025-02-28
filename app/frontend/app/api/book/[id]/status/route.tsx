@@ -1,21 +1,29 @@
-import { NextRequest, NextResponse } from "next/server";
 import camelcaseKeys from "camelcase-keys";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
+export async function PUT(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const id = params.id;
-    if (!id) {
+    const { status } = await req.json();
+
+    if (typeof status !== "number" || isNaN(status)) {
       return NextResponse.json(
-        { error: "Missing required parameter: id" },
+        { error: "Invalid status value" },
         { status: 400 }
       );
     }
 
-    const apiUrl = `${process.env.API_URL}/book/${id}`;
-    const res = await fetch(apiUrl);
+    const apiUrl = `${process.env.API_URL}/book/${id}/status`;
+    const res = await fetch(apiUrl, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        status: status,
+      }),
+    });
     if (!res.ok) {
       throw new Error(`API Error: ${res.statusText}`);
     }

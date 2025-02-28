@@ -41,7 +41,7 @@ func TestUpdateBookStatusTo1OK(t *testing.T) {
 	}
 	requestBodyJson, _ := json.Marshal(requestBody)
 
-	req, _ := http.NewRequest("PUT", "/book/status/1", bytes.NewReader(requestBodyJson))
+	req, _ := http.NewRequest("PUT", "/book/1/status", bytes.NewReader(requestBodyJson))
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
@@ -104,7 +104,7 @@ func TestUpdateBookStatusTo2OK(t *testing.T) {
 	}
 	requestBodyJson, _ := json.Marshal(requestBody)
 
-	req, _ := http.NewRequest("PUT", "/book/status/1", bytes.NewReader(requestBodyJson))
+	req, _ := http.NewRequest("PUT", "/book/1/status", bytes.NewReader(requestBodyJson))
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
@@ -167,7 +167,7 @@ func TestUpdateBookStatusTo3OK(t *testing.T) {
 	}
 	requestBodyJson, _ := json.Marshal(requestBody)
 
-	req, _ := http.NewRequest("PUT", "/book/status/1", bytes.NewReader(requestBodyJson))
+	req, _ := http.NewRequest("PUT", "/book/1/status", bytes.NewReader(requestBodyJson))
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 
@@ -230,7 +230,7 @@ func TestUpdateBookStatusInvalidStatusNG(t *testing.T) {
 	}
 	requestBodyJson, _ := json.Marshal(requestBody)
 
-	req, _ := http.NewRequest("PUT", "/book/status/1", bytes.NewReader(requestBodyJson))
+	req, _ := http.NewRequest("PUT", "/book/1/status", bytes.NewReader(requestBodyJson))
 	w := httptest.NewRecorder()
 	r.ServeHTTP(w, req)
 

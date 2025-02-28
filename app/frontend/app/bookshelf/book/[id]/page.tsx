@@ -2,15 +2,38 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { toast } from "react-toastify";
+import {
+  BOOK_STATUS_NOT_PURCHASED,
+  BOOK_STATUS_PURCHASED,
+  BOOK_STATUS_READING,
+  BOOK_STATUS_READ_COMPLETED,
+  BOOK_STATUS_LABELS,
+} from "../../../constants";
 
 export default function BookDetail({ params }: { params: { id: string } }) {
-  const BOOK_STATUS_NOT_PURCHASED = 0;
-  const BOOK_STATUS_PURCHASED = 1;
-  const BOOK_STATUS_READING = 2;
-  const BOOK_STATUS_READ_COMPLETED = 3;
+  const BOOK_STATUSES = [
+    {
+      value: BOOK_STATUS_NOT_PURCHASED,
+      label: BOOK_STATUS_LABELS[BOOK_STATUS_NOT_PURCHASED],
+    },
+    {
+      value: BOOK_STATUS_PURCHASED,
+      label: BOOK_STATUS_LABELS[BOOK_STATUS_PURCHASED],
+    },
+    {
+      value: BOOK_STATUS_READING,
+      label: BOOK_STATUS_LABELS[BOOK_STATUS_READING],
+    },
+    {
+      value: BOOK_STATUS_READ_COMPLETED,
+      label: BOOK_STATUS_LABELS[BOOK_STATUS_READ_COMPLETED],
+    },
+  ];
 
   const { id } = useParams();
-  const [bookInfo, setBook] = useState<BookInfo | null>(null);
+  const [bookInfo, setBookInfo] = useState<BookInfo | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<number>(0);
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -20,11 +43,37 @@ export default function BookDetail({ params }: { params: { id: string } }) {
         return;
       }
       const data = await res.json();
-      setBook(data);
+      setBookInfo(data);
+      setSelectedStatus(data.book.status);
     };
 
     fetchBook();
   }, []);
+
+  const updateStatus = async () => {
+    const res = await fetch(`/api/book/${id}/status`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        status: selectedStatus,
+      }),
+    });
+    if (!res.ok) {
+      console.error("Failed to update status");
+      return;
+    }
+    const data = await res.json();
+    const newBookInfo: BookInfo = {
+      book: data,
+      authors: bookInfo?.authors ?? [],
+      subjects: bookInfo?.subjects ?? [],
+    };
+    setBookInfo(newBookInfo);
+    toast.success("ステータスを更新しました！", {
+      position: "top-right",
+      autoClose: 2000,
+    });
+  };
 
   return (
     <div className="min-h-screen pt-16">
@@ -80,38 +129,24 @@ export default function BookDetail({ params }: { params: { id: string } }) {
               <span className="font-semibold">ISBN:</span> {bookInfo?.book.isbn}
             </p>
 
-            {/* ステータス */}
             <div className="mt-3">
               <span className="font-semibold">ステータス:</span>{" "}
-              <span
-                className={`inline-block px-3 py-1 rounded-md text-white ${
-                  bookInfo?.book.status === BOOK_STATUS_NOT_PURCHASED
-                    ? "bg-gray-500"
-                    : bookInfo?.book.status === BOOK_STATUS_PURCHASED
-                    ? "bg-yellow-500"
-                    : bookInfo?.book.status === BOOK_STATUS_READING
-                    ? "bg-blue-500"
-                    : bookInfo?.book.status === BOOK_STATUS_READ_COMPLETED
-                    ? "bg-green-500"
-                    : ""
-                }`}
+              <select
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(Number(e.target.value))}
+                className="ml-2 p-2 border rounded-md bg-white"
               >
-                {bookInfo?.book.status === BOOK_STATUS_NOT_PURCHASED
-                  ? "未購入"
-                  : bookInfo?.book.status === BOOK_STATUS_PURCHASED
-                  ? "積読中"
-                  : bookInfo?.book.status === BOOK_STATUS_READING
-                  ? "読んでいる"
-                  : bookInfo?.book.status === BOOK_STATUS_READ_COMPLETED
-                  ? "読んだ"
-                  : ""}
-              </span>
-            </div>
-
-            {/* ボタン */}
-            <div className="mt-5 flex gap-3">
-              <button className="px-4 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700">
-                本棚に追加
+                {BOOK_STATUSES.map((status) => (
+                  <option key={status.value} value={status.value}>
+                    {status.label}
+                  </option>
+                ))}
+              </select>
+              <button
+                className="mx-4 px-4 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700"
+                onClick={updateStatus}
+              >
+                更新
               </button>
             </div>
           </div>

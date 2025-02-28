@@ -82,7 +82,7 @@ func setupBookRoutes(r *gin.Engine, bookController IBookController) {
 		book.GET("/:id", bookController.GetBookInfoByBookId)
 		book.POST("", bookController.CreateBookInfo)
 		book.PUT("/:id", bookController.UpdateBook)
-		book.PUT("/status/:id", bookController.UpdateBookStatus)
+		book.PUT("/:id/status", bookController.UpdateBookStatus)
 		book.DELETE("/:id", bookController.DeleteBook)
 	}
 }
