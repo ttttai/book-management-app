@@ -3,9 +3,11 @@ package controllers
 import (
 	"errors"
 	"net/http"
+	"slices"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ttttai/golang/domain/entities"
+	"github.com/ttttai/golang/domain/services"
 	"github.com/ttttai/golang/usecases"
 	"github.com/ttttai/golang/usecases/dto"
 	"gorm.io/gorm"
@@ -18,6 +20,7 @@ type IBookController interface {
 	UpdateBook(c *gin.Context)
 	DeleteBook(c *gin.Context)
 	UpdateBookStatus(c *gin.Context)
+	GetBookInfo(c *gin.Context)
 }
 
 type BookController struct {
@@ -31,7 +34,7 @@ func NewBookController(bookUsecase usecases.IBookUsecase) IBookController {
 }
 
 func (bc *BookController) SearchBooks(c *gin.Context) {
-	var request dto.GetBookRequestParam
+	var request dto.SearchBookRequestParam
 
 	if err := c.ShouldBindQuery(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -46,7 +49,7 @@ func (bc *BookController) SearchBooks(c *gin.Context) {
 }
 
 func (bc *BookController) GetBookInfoByBookId(c *gin.Context) {
-	var request dto.GetBookInfoRequestParam
+	var request dto.GetBookInfoByBookIdRequestParam
 
 	if err := c.ShouldBindUri(&request); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -146,6 +149,32 @@ func (bc *BookController) UpdateBookStatus(c *gin.Context) {
 	}
 
 	res, err := bc.bookUsecase.UpdateBookStatus(pathParam.ID, bodyParam.Status)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, res)
+}
+
+func (bc *BookController) GetBookInfo(c *gin.Context) {
+	var request dto.GetBookInfoByStatusRequestParam
+
+	if err := c.ShouldBindQuery(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	all_status := []int{services.BOOK_STATUS_NOT_PURCHASED, services.BOOK_STATUS_PURCHASED, services.BOOK_STATUS_READING, services.BOOK_STATUS_READ_COMPLETED}
+	if len(request.Status) == 0 {
+		request.Status = all_status
+	}
+	for _, statusItem := range request.Status {
+		if !slices.Contains(all_status, statusItem) {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "statusは0,1,2,3のいずれかを指定してください"})
+			return
+		}
+	}
+
+	res, err := bc.bookUsecase.GetBookInfo(request.Title, request.Status)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -12,6 +12,7 @@ type IBookUsecase interface {
 	UpdateBook(book *entities.Book) (*entities.Book, error)
 	DeleteBook(id int) error
 	UpdateBookStatus(id int, bookStatus int) (*entities.Book, error)
+	GetBookInfo(title string, status []int) (*[]entities.BookInfo, error)
 }
 
 type BookUsecase struct {
@@ -144,6 +145,15 @@ func (bu *BookUsecase) DeleteBook(id int) error {
 
 func (bu *BookUsecase) UpdateBookStatus(id int, bookStatus int) (*entities.Book, error) {
 	result, err := bu.bookService.UpdateBookStatus(id, bookStatus)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (bu *BookUsecase) GetBookInfo(title string, status []int) (*[]entities.BookInfo, error) {
+	result, err := bu.bookService.GetBookInfo(title, status)
 	if err != nil {
 		return nil, err
 	}

@@ -22,6 +22,7 @@ type IBookService interface {
 	UpdateBook(book *entities.Book) (*entities.Book, error)
 	DeleteBook(id int) error
 	UpdateBookStatus(id int, bookStatus int) (*entities.Book, error)
+	GetBookInfo(title string, status []int) (*[]entities.BookInfo, error)
 }
 
 type BookService struct {
@@ -183,6 +184,15 @@ func (bs *BookService) UpdateBookStatus(id int, bookStatus int) (*entities.Book,
 
 	book.Status = bookStatus
 	result, err := bs.bookRepository.UpdateBook(book)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (bs *BookService) GetBookInfo(title string, status []int) (*[]entities.BookInfo, error) {
+	result, err := bs.bookRepository.GetBookInfo(title, status)
 	if err != nil {
 		return nil, err
 	}

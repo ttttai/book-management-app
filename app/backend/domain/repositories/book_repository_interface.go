@@ -15,4 +15,5 @@ type IBookRepository interface {
 	UpdateBook(bookInfo *entities.Book) (*entities.Book, error)
 	DeleteBook(id int) error
 	GetBookById(id int) (*entities.Book, error)
+	GetBookInfo(title string, status []int) (*[]entities.BookInfo, error)
 }

@@ -1,11 +1,11 @@
 package dto
 
-type GetBookRequestParam struct {
+type SearchBookRequestParam struct {
 	Title  string `form:"title"`
 	MaxNum int    `form:"maxNum,default=30"`
 }
 
-type GetBookInfoRequestParam struct {
+type GetBookInfoByBookIdRequestParam struct {
 	ID int `uri:"id" binding:"required"`
 }
 
@@ -57,4 +57,9 @@ type UpdateBookStatusRequestPathParam struct {
 
 type UpdateBookStatusRequestBodyParam struct {
 	Status int `json:"status"`
+}
+
+type GetBookInfoByStatusRequestParam struct {
+	Title  string `form:"title"`
+	Status []int  `form:"status"`
 }

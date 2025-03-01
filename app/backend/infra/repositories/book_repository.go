@@ -167,3 +167,23 @@ func (br *BookRepository) GetBookById(id int) (*entities.Book, error) {
 
 	return models.ToBookDomainModel(&book), nil
 }
+
+func (br *BookRepository) GetBookInfo(title string, status []int) (*[]entities.BookInfo, error) {
+	var books []models.Book
+	var bookInfo []entities.BookInfo
+
+	result := br.db.Preload("Authors").Preload("Subjects").Where("status IN ?", status).Where("title_name LIKE ?", "%"+title+"%").Find(&books)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	for _, book := range books {
+		bookInfo = append(bookInfo, entities.BookInfo{
+			Book:     *models.ToBookDomainModel(&book),
+			Authors:  *models.ToAuthorDomainModels(&book.Authors),
+			Subjects: *models.ToSubjectDomainModels(&book.Subjects),
+		})
+	}
+
+	return &bookInfo, nil
+}

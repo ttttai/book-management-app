@@ -40,7 +40,7 @@ export default function Navbar() {
             className={`${pathname === "/mypage" ? activeClass : baseClass}`}
             onClick={() => router.push("/mypage")}
           >
-            👤 プロフィール
+            👤 マイページ
           </button>
         </div>
       </div>

@@ -80,6 +80,7 @@ func setupBookRoutes(r *gin.Engine, bookController IBookController) {
 	{
 		book.GET("/search", bookController.SearchBooks)
 		book.GET("/:id", bookController.GetBookInfoByBookId)
+		book.GET("", bookController.GetBookInfo)
 		book.POST("", bookController.CreateBookInfo)
 		book.PUT("/:id", bookController.UpdateBook)
 		book.PUT("/:id/status", bookController.UpdateBookStatus)
