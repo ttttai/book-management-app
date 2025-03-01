@@ -40,7 +40,7 @@ func (bc *BookController) SearchBooks(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
-	res, err := bc.bookUsecase.SearchBooks(request.Title, request.MaxNum)
+	res, err := bc.bookUsecase.SearchBooks(request.Title, request.MaxNum, request.Offset)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

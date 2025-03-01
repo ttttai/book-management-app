@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Loading from "./loading";
 import BookInfoDisplay from "../components/bookInfoDisplay";
 import SearchBox from "../components/searchBox";
@@ -10,28 +10,72 @@ export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isFirstVisit, setIsFirstVisit] = useState<boolean>(true);
+  const [offset, setOffset] = useState(1);
+  const loader = useRef<HTMLDivElement | null>(null);
+  const [prevQuery, setPrevQuery] = useState("");
 
   const searchBooks = async () => {
     try {
       setIsLoading(true);
       setIsFirstVisit(false);
-      const res = await fetch(`/api/book/search?title=${query}`);
+      setPrevQuery(query);
+
+      if (prevQuery != query) {
+        setBookInfo([]);
+      }
+
+      const res = await fetch(
+        `/api/book/search?title=${query}&offset=${offset}`
+      );
       if (!res.ok) {
         throw new Error("Failed to fetch books");
       }
 
-      const bookInfo = await res.json();
-      if (bookInfo == null) {
-        setBookInfo([]);
-      } else {
-        setBookInfo(bookInfo);
+      const data = await res.json();
+      if (data != null) {
+        if (prevQuery == query) {
+          setBookInfo((prev) => [...prev, ...data]);
+        } else {
+          setBookInfo(data);
+        }
       }
+
       setIsLoading(false);
     } catch (err: any) {
       console.log(err.message);
       setIsLoading(false);
     }
   };
+
+  // targetと交差すると発火し、offsetを変更する
+  const handleObserver = useCallback(
+    (entities: IntersectionObserverEntry[]) => {
+      const target = entities[0];
+      if (target.isIntersecting) {
+        setOffset((prev) => prev + 30);
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(handleObserver, {
+      root: null,
+      rootMargin: "20px",
+      threshold: 0.9,
+    });
+    if (loader.current) observer.observe(loader.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [handleObserver]);
+
+  useEffect(() => {
+    if (bookInfo.length != 0) {
+      searchBooks();
+    }
+  }, [offset]);
 
   return (
     <div>
@@ -48,30 +92,28 @@ export default function SearchPage() {
       </div>
       <div className="flex items-center justify-center px-30 pt-5">
         <div>
-          {isLoading ? (
-            <Loading />
-          ) : (
-            <div>
-              {bookInfo.length == 0 ? (
-                <div>
-                  {!isFirstVisit && (
-                    <div className="text-lg">見つかりませんでした</div>
-                  )}
-                </div>
-              ) : (
-                <div className="grid grid-cols-4 gap-4">
-                  {bookInfo.map((bookInfoItem) => (
-                    <BookInfoDisplay
-                      key={bookInfoItem.book.id}
-                      bookInfoItem={bookInfoItem}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+          <div>
+            {bookInfo.length == 0 ? (
+              <div>
+                {!isFirstVisit && !isLoading && (
+                  <div className="text-lg">見つかりませんでした</div>
+                )}
+              </div>
+            ) : (
+              <div className="grid grid-cols-4 gap-4">
+                {bookInfo.map((bookInfoItem) => (
+                  <BookInfoDisplay
+                    key={bookInfoItem.book.id}
+                    bookInfoItem={bookInfoItem}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+          {isLoading && <Loading />}
         </div>
       </div>
+      <div ref={loader}></div>
     </div>
   );
 }

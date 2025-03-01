@@ -64,11 +64,11 @@ func NewNdlApiRepository() repositories.INdlApiRepository {
 	return &NdlApiRepository{}
 }
 
-func (br *NdlApiRepository) GetBooksFromNdlApi(title string, maxNum int) (*[]entities.BookInfo, error) {
+func (br *NdlApiRepository) GetBooksFromNdlApi(title string, maxNum int, offset int) (*[]entities.BookInfo, error) {
 	var bookInfo []entities.BookInfo
 
 	encodedTitle := url.PathEscape(title)
-	res, err := http.Get(NDL_SEARCH_API_URL + "?operation=searchRetrieve" + "&recordPacking=xml" + "&recordSchema=dcndl" + "&maximumRecords=" + strconv.Itoa(maxNum) + "&query=title=" + encodedTitle)
+	res, err := http.Get(NDL_SEARCH_API_URL + "?operation=searchRetrieve" + "&recordPacking=xml" + "&recordSchema=dcndl" + "&maximumRecords=" + strconv.Itoa(maxNum) + "&query=title=" + encodedTitle + "&startRecord=" + strconv.Itoa(offset))
 
 	if err != nil {
 		return nil, err

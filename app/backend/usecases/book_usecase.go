@@ -1,12 +1,14 @@
 package usecases
 
 import (
+	"slices"
+
 	"github.com/ttttai/golang/domain/entities"
 	"github.com/ttttai/golang/domain/services"
 )
 
 type IBookUsecase interface {
-	SearchBooks(title string, maxNum int) (*[]entities.BookInfo, error)
+	SearchBooks(title string, maxNum int, offset int) (*[]entities.BookInfo, error)
 	GetBookInfoByBookId(id int) (*entities.BookInfo, error)
 	CreateBookInfo(bookInfo *entities.BookInfo) (*entities.BookInfo, error)
 	UpdateBook(book *entities.Book) (*entities.Book, error)
@@ -29,56 +31,47 @@ func NewBookUsecase(bookService services.IBookService, authorService services.IA
 	}
 }
 
-func (bu *BookUsecase) SearchBooks(title string, maxNum int) (*[]entities.BookInfo, error) {
+func (bu *BookUsecase) SearchBooks(title string, maxNum int, offset int) (*[]entities.BookInfo, error) {
 	var bookInfo []entities.BookInfo
 
-	booksFromDB, err := bu.bookService.GetBooksByFuzzyTitle(title)
+	bookInfoFromApi, err := bu.bookService.GetBooksFromNdlApi(title, maxNum, offset)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(*booksFromDB) >= maxNum {
-		// DBにすでにmaxNum個存在している場合、DBから取り出す
-		for i := 0; i < maxNum; i++ {
-			bookInfoItem, err := bu.GetBookInfoByBookId((*booksFromDB)[i].ID)
-			if err != nil {
-				return nil, err
-			}
-			bookInfo = append(bookInfo, *bookInfoItem)
-		}
-	} else {
-		bookInfoFromApi, err := bu.bookService.GetBooksFromNdlApi(title, maxNum)
+	// すでにDBに存在している場合、除外
+	var excludedBookInfo []entities.BookInfo
+	var bookInfoISBNs []int
+	for _, bookInfoItem := range *bookInfoFromApi {
+		book, err := bu.bookService.GetBookByISBN(bookInfoItem.Book.ISBN)
 		if err != nil {
 			return nil, err
 		}
 
-		// すでにDBに存在している場合、除外
-		var excludedBookInfo []entities.BookInfo
-		for _, bookInfoItem := range *bookInfoFromApi {
-			book, err := bu.bookService.GetBookByISBN(bookInfoItem.Book.ISBN)
-			if err != nil {
-				return nil, err
+		if book == nil {
+			excludedBookInfo = append(excludedBookInfo, bookInfoItem)
+		} else {
+			// APIから同じISBNの本を取得した場合スキップ
+			if slices.Contains(bookInfoISBNs, book.ISBN) {
+				continue
 			}
+			bookInfoISBNs = append(bookInfoISBNs, book.ISBN)
 
-			if book == nil {
-				excludedBookInfo = append(excludedBookInfo, bookInfoItem)
-			} else {
-				bookInfoItem, err := bu.GetBookInfoByBookId(book.ID)
-				if err != nil {
-					return nil, err
-				}
-				bookInfo = append(bookInfo, *bookInfoItem)
-			}
-		}
-
-		// DBに登録
-		for _, excludedBookInfoItem := range excludedBookInfo {
-			bookInfoItem, err := bu.CreateBookInfo(&excludedBookInfoItem)
+			bookInfoItem, err := bu.GetBookInfoByBookId(book.ID)
 			if err != nil {
 				return nil, err
 			}
 			bookInfo = append(bookInfo, *bookInfoItem)
 		}
+	}
+
+	// DBに登録
+	for _, excludedBookInfoItem := range excludedBookInfo {
+		bookInfoItem, err := bu.CreateBookInfo(&excludedBookInfoItem)
+		if err != nil {
+			return nil, err
+		}
+		bookInfo = append(bookInfo, *bookInfoItem)
 	}
 
 	return &bookInfo, nil

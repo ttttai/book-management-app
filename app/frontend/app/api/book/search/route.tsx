@@ -5,8 +5,9 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const title = searchParams.get("title");
+    const offset = searchParams.get("offset");
 
-    const apiUrl = `${process.env.API_URL}/book/search?title=${title}`;
+    const apiUrl = `${process.env.API_URL}/book/search?title=${title}&offset=${offset}`;
     const res = await fetch(apiUrl);
     if (!res.ok) {
       throw new Error(`API Error: ${res.statusText}`);

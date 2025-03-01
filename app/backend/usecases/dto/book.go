@@ -3,6 +3,7 @@ package dto
 type SearchBookRequestParam struct {
 	Title  string `form:"title"`
 	MaxNum int    `form:"maxNum,default=30"`
+	Offset int    `form:"offset,default=1"`
 }
 
 type GetBookInfoByBookIdRequestParam struct {

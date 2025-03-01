@@ -9,7 +9,7 @@ import (
 )
 
 type IBookService interface {
-	GetBooksFromNdlApi(title string, maxNum int) (*[]entities.BookInfo, error)
+	GetBooksFromNdlApi(title string, maxNum int, offset int) (*[]entities.BookInfo, error)
 	CreateBook(book *entities.Book) (*entities.Book, error)
 	CreateBooks(books *[]entities.Book) (*[]entities.Book, error)
 	CreateBookAuthors(bookAuthors *[]entities.BookAuthor) (*[]entities.BookAuthor, error)
@@ -46,8 +46,8 @@ const BOOK_STATUS_PURCHASED = 1
 const BOOK_STATUS_READING = 2
 const BOOK_STATUS_READ_COMPLETED = 3
 
-func (bs *BookService) GetBooksFromNdlApi(title string, maxNum int) (*[]entities.BookInfo, error) {
-	bookInfo, err := bs.ndlApiRepository.GetBooksFromNdlApi(title, maxNum)
+func (bs *BookService) GetBooksFromNdlApi(title string, maxNum int, offset int) (*[]entities.BookInfo, error) {
+	bookInfo, err := bs.ndlApiRepository.GetBooksFromNdlApi(title, maxNum, offset)
 	if err != nil {
 		return nil, err
 	}

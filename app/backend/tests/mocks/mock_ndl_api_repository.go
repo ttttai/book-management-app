@@ -13,7 +13,7 @@ func NewMockNdlApiRepository() *MockNdlApiRepository {
 	return &MockNdlApiRepository{}
 }
 
-func (m *MockNdlApiRepository) GetBooksFromNdlApi(title string, maxNum int) (*[]entities.BookInfo, error) {
+func (m *MockNdlApiRepository) GetBooksFromNdlApi(title string, maxNum int, offSet int) (*[]entities.BookInfo, error) {
 	args := m.Called(title, maxNum)
 	if args.Get(0) == nil {
 		return nil, args.Error(1)
