@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   BOOK_STATUS_PURCHASED,
   BOOK_STATUS_READING,
@@ -9,6 +10,7 @@ import {
 } from "../constants";
 
 export default function MyPage() {
+  const router = useRouter();
   const [bookInfo, setBookInfo] = useState<BookInfo[]>([]);
   const [statusCounts, setStatusCounts] = useState({
     [BOOK_STATUS_PURCHASED]: 0,
@@ -57,7 +59,12 @@ export default function MyPage() {
         <h1 className="text-2xl font-bold mb-4">マイページ</h1>
 
         <div className="grid grid-cols-3 gap-4 text-center">
-          <div className="p-4 bg-yellow-100 rounded-lg shadow-md">
+          <div
+            className="p-4 bg-yellow-100 rounded-lg shadow-md cursor-pointer transition transform hover:scale-105 hover:shadow-lg active:scale-95"
+            onClick={() =>
+              router.push(`/bookshelf?status=${BOOK_STATUS_PURCHASED}`)
+            }
+          >
             <p className="text-lg font-semibold">
               {BOOK_STATUS_LABELS[BOOK_STATUS_PURCHASED]}
             </p>
@@ -66,7 +73,12 @@ export default function MyPage() {
             </p>
           </div>
 
-          <div className="p-4 bg-blue-100 rounded-lg shadow-md">
+          <div
+            className="p-4 bg-blue-100 rounded-lg shadow-md cursor-pointer transition transform hover:scale-105 hover:shadow-lg active:scale-95"
+            onClick={() =>
+              router.push(`/bookshelf?status=${BOOK_STATUS_READING}`)
+            }
+          >
             <p className="text-lg font-semibold">
               {BOOK_STATUS_LABELS[BOOK_STATUS_READING]}
             </p>
@@ -75,7 +87,12 @@ export default function MyPage() {
             </p>
           </div>
 
-          <div className="p-4 bg-green-100 rounded-lg shadow-md">
+          <div
+            className="p-4 bg-green-100 rounded-lg shadow-md cursor-pointer transition transform hover:scale-105 hover:shadow-lg active:scale-95"
+            onClick={() =>
+              router.push(`/bookshelf?status=${BOOK_STATUS_READ_COMPLETED}`)
+            }
+          >
             <p className="text-lg font-semibold">
               {BOOK_STATUS_LABELS[BOOK_STATUS_READ_COMPLETED]}
             </p>

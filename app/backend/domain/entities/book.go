@@ -10,4 +10,6 @@ type Book struct {
 	PublishDate       *string
 	Price             int
 	Status            int
+	ReadingStartDate  *string
+	ReadingEndDate    *string
 }

@@ -12,8 +12,11 @@ import {
   BOOK_STATUS_LABELS,
 } from "../constants";
 import { HelpCircle } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 export default function BookshelfPage() {
+  const searchParams = useSearchParams();
+  const status = searchParams.get("status");
   const [bookInfo, setBookInfo] = useState<BookInfo[]>([]);
   const [query, setQuery] = useState("");
   const SELECTABLE_BOOK_STATUS = [
@@ -21,11 +24,17 @@ export default function BookshelfPage() {
     BOOK_STATUS_READING,
     BOOK_STATUS_READ_COMPLETED,
   ];
-  const [selectedStatuses, setSelectedStatuses] = useState<number[]>(
-    SELECTABLE_BOOK_STATUS
-  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isHovered, setIsHovered] = useState(false);
+
+  let firstStatus: number[];
+  if (status == null) {
+    firstStatus = SELECTABLE_BOOK_STATUS;
+  } else {
+    firstStatus = [Number(status)];
+  }
+  const [selectedStatuses, setSelectedStatuses] =
+    useState<number[]>(firstStatus);
 
   const handleStatusChange = (status: number) => {
     setSelectedStatuses((prev) =>
@@ -37,7 +46,7 @@ export default function BookshelfPage() {
 
   useEffect(() => {
     fetchBooks();
-  }, []);
+  }, [selectedStatuses]);
 
   const fetchBooks = async () => {
     try {

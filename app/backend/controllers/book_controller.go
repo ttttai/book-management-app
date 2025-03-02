@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"slices"
 
@@ -21,6 +22,7 @@ type IBookController interface {
 	DeleteBook(c *gin.Context)
 	UpdateBookStatus(c *gin.Context)
 	GetBookInfo(c *gin.Context)
+	GetGeminiResponse(c *gin.Context)
 }
 
 type BookController struct {
@@ -81,8 +83,11 @@ func (bc *BookController) CreateBookInfo(c *gin.Context) {
 			TitleNameKana:     request.Book.TitleNameKana,
 			PublisherName:     request.Book.PublisherName,
 			PublisherNameKana: request.Book.PublisherNameKana,
-			PublishDate:       &request.Book.PublishDate,
+			PublishDate:       request.Book.PublishDate,
 			Price:             request.Book.Price,
+			Status:            request.Book.Status,
+			ReadingStartDate:  request.Book.ReadingStartDate,
+			ReadingEndDate:    request.Book.ReadingEndDate,
 		},
 		Authors:  convertAuthors(request.Authors),
 		Subjects: convertSubjects(request.Subjects),
@@ -103,6 +108,7 @@ func (bc *BookController) UpdateBook(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
+	fmt.Println(request)
 	book := &entities.Book{
 		ID:                request.ID,
 		ISBN:              request.ISBN,
@@ -110,9 +116,13 @@ func (bc *BookController) UpdateBook(c *gin.Context) {
 		TitleNameKana:     request.TitleNameKana,
 		PublisherName:     request.PublisherName,
 		PublisherNameKana: request.PublisherNameKana,
-		PublishDate:       &request.PublishDate,
+		PublishDate:       request.PublishDate,
 		Price:             request.Price,
+		Status:            request.Status,
+		ReadingStartDate:  request.ReadingStartDate,
+		ReadingEndDate:    request.ReadingEndDate,
 	}
+	fmt.Println(book)
 
 	res, err := bc.bookUsecase.UpdateBook(book)
 	if err != nil {
@@ -175,6 +185,21 @@ func (bc *BookController) GetBookInfo(c *gin.Context) {
 	}
 
 	res, err := bc.bookUsecase.GetBookInfo(request.Title, request.Status)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, res)
+}
+
+func (bc *BookController) GetGeminiResponse(c *gin.Context) {
+	var request dto.GetGeminiResponseRequestParam
+
+	if err := c.ShouldBindQuery(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
+	res, err := bc.bookUsecase.GetGeminiResponse(request.Prompt)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

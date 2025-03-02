@@ -7,6 +7,7 @@ import (
 	repository_interfaces "github.com/ttttai/golang/domain/repositories"
 	"github.com/ttttai/golang/domain/services"
 	"github.com/ttttai/golang/infra/repositories"
+	"github.com/ttttai/golang/tests/mocks"
 	"github.com/ttttai/golang/usecases"
 	"gorm.io/gorm"
 )
@@ -27,9 +28,12 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	subjectRepository := repositories.NewSubjectRepository(db)
 	subjectService := services.NewSubjectService(subjectRepository)
 
+	geminiApiRepository := repositories.NewGeminiApiRepository()
+	geminiApiService := services.NewGeminiApiService(geminiApiRepository)
+
 	bookRepository := repositories.NewBookRepository(db)
 	bookService := services.NewBookService(bookRepository, authorRepository, subjectRepository, ndlApiRepository)
-	bookUsecase := usecases.NewBookUsecase(bookService, authorService, subjectService)
+	bookUsecase := usecases.NewBookUsecase(bookService, authorService, subjectService, geminiApiService)
 	bookController := NewBookController(bookUsecase)
 	setupBookRoutes(r, bookController)
 
@@ -50,9 +54,12 @@ func SetupTestRouter(db *gorm.DB, mockNdlApiRepository repository_interfaces.INd
 	subjectRepository := repositories.NewSubjectRepository(db)
 	subjectService := services.NewSubjectService(subjectRepository)
 
+	mockGeminiApiRepository := new(mocks.MockGeminiApiRepository)
+	geminiApiService := services.NewGeminiApiService(mockGeminiApiRepository)
+
 	bookRepository := repositories.NewBookRepository(db)
 	bookService := services.NewBookService(bookRepository, authorRepository, subjectRepository, mockNdlApiRepository)
-	bookUsecase := usecases.NewBookUsecase(bookService, authorService, subjectService)
+	bookUsecase := usecases.NewBookUsecase(bookService, authorService, subjectService, geminiApiService)
 	bookController := NewBookController(bookUsecase)
 	setupBookRoutes(r, bookController)
 
@@ -79,6 +86,7 @@ func setupBookRoutes(r *gin.Engine, bookController IBookController) {
 	book := r.Group("/book")
 	{
 		book.GET("/search", bookController.SearchBooks)
+		book.GET("/gemini", bookController.GetGeminiResponse)
 		book.GET("/:id", bookController.GetBookInfoByBookId)
 		book.GET("", bookController.GetBookInfo)
 		book.POST("", bookController.CreateBookInfo)

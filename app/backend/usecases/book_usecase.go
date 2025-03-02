@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"slices"
+	"strings"
 
 	"github.com/ttttai/golang/domain/entities"
 	"github.com/ttttai/golang/domain/services"
@@ -15,19 +16,22 @@ type IBookUsecase interface {
 	DeleteBook(id int) error
 	UpdateBookStatus(id int, bookStatus int) (*entities.Book, error)
 	GetBookInfo(title string, status []int) (*[]entities.BookInfo, error)
+	GetGeminiResponse(prompt string) ([]entities.BookInfo, error)
 }
 
 type BookUsecase struct {
-	bookService    services.IBookService
-	authorService  services.IAuthorService
-	subjectService services.ISubjectService
+	bookService      services.IBookService
+	authorService    services.IAuthorService
+	subjectService   services.ISubjectService
+	geminiApiService services.IGeminiApiService
 }
 
-func NewBookUsecase(bookService services.IBookService, authorService services.IAuthorService, subjectService services.ISubjectService) IBookUsecase {
+func NewBookUsecase(bookService services.IBookService, authorService services.IAuthorService, subjectService services.ISubjectService, geminiApiService services.IGeminiApiService) IBookUsecase {
 	return &BookUsecase{
-		bookService:    bookService,
-		authorService:  authorService,
-		subjectService: subjectService,
+		bookService:      bookService,
+		authorService:    authorService,
+		subjectService:   subjectService,
+		geminiApiService: geminiApiService,
 	}
 }
 
@@ -152,4 +156,34 @@ func (bu *BookUsecase) GetBookInfo(title string, status []int) (*[]entities.Book
 	}
 
 	return result, nil
+}
+
+func (bu *BookUsecase) GetGeminiResponse(prompt string) ([]entities.BookInfo, error) {
+	bookInfo, err := bu.bookService.GetBookInfo("", []int{services.BOOK_STATUS_PURCHASED, services.BOOK_STATUS_READING, services.BOOK_STATUS_READ_COMPLETED})
+	if err != nil {
+		return nil, err
+	}
+
+	var bookTitles []string
+	for _, bookInfoItem := range *bookInfo {
+		bookTitles = append(bookTitles, bookInfoItem.Book.TitleName)
+	}
+
+	recommendationRequest := "以下の私が読んできた本を参考にして、おすすめの本を5冊挙げ、そのタイトルのみを箇条書きで提示してください。ただし、すでに読んだ本は提示しないてください。\\" + strings.Join(bookTitles, ",")
+	recommendationTitles, err := bu.geminiApiService.GetGeminiResponse(recommendationRequest)
+	if err != nil {
+		return nil, err
+	}
+
+	var recommendationBooks []entities.BookInfo
+	for _, recommendationTitle := range recommendationTitles {
+		recommendationBookCandidates, err := bu.SearchBooks(recommendationTitle, 10, 1)
+		if err != nil {
+			return nil, err
+		}
+		if len(*recommendationBookCandidates) != 0 {
+			recommendationBooks = append(recommendationBooks, (*recommendationBookCandidates)[0])
+		}
+	}
+	return recommendationBooks, err
 }

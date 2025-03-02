@@ -34,6 +34,8 @@ export default function BookDetail({ params }: { params: { id: string } }) {
   const { id } = useParams();
   const [bookInfo, setBookInfo] = useState<BookInfo | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<number>(0);
+  const [readingStartDate, setReadingStartDate] = useState<string>("");
+  const [readingEndDate, setReadingEndDate] = useState<string>("");
 
   useEffect(() => {
     const fetchBook = async () => {
@@ -45,34 +47,110 @@ export default function BookDetail({ params }: { params: { id: string } }) {
       const data = await res.json();
       setBookInfo(data);
       setSelectedStatus(data.book.status);
+      if (data.book.readingStartDate != null) {
+        setReadingStartDate(data.book.readingStartDate.split("T")[0]);
+      }
+      if (data.book.readingEndDate != null) {
+        setReadingEndDate(data.book.readingEndDate.split("T")[0]);
+      }
     };
 
     fetchBook();
   }, []);
 
   const updateStatus = async () => {
-    const res = await fetch(`/api/book/${id}/status`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        status: selectedStatus,
-      }),
-    });
-    if (!res.ok) {
-      console.error("Failed to update status");
-      return;
+    try {
+      const res = await fetch(`/api/book/${id}/status`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status: selectedStatus,
+        }),
+      });
+      if (!res.ok) {
+        console.error("Failed to update status");
+        return;
+      }
+      const data = await res.json();
+      const newBookInfo: BookInfo = {
+        book: data,
+        authors: bookInfo?.authors ?? [],
+        subjects: bookInfo?.subjects ?? [],
+      };
+      setBookInfo(newBookInfo);
+      toast.success("ステータスを更新しました！", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    } catch (error: any) {
+      console.log(error.message);
     }
-    const data = await res.json();
-    const newBookInfo: BookInfo = {
-      book: data,
-      authors: bookInfo?.authors ?? [],
-      subjects: bookInfo?.subjects ?? [],
-    };
-    setBookInfo(newBookInfo);
-    toast.success("ステータスを更新しました！", {
-      position: "top-right",
-      autoClose: 2000,
-    });
+  };
+
+  const updateReadingStartDate = async () => {
+    try {
+      if (bookInfo == null) {
+        return;
+      }
+      let requestBody = bookInfo.book;
+      requestBody.readingStartDate = readingStartDate;
+
+      const res = await fetch(`/api/book/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
+      });
+      if (!res.ok) {
+        console.error("Failed to update status");
+        return;
+      }
+      const data = await res.json();
+      const newBookInfo: BookInfo = {
+        book: data,
+        authors: bookInfo?.authors ?? [],
+        subjects: bookInfo?.subjects ?? [],
+      };
+      setBookInfo(newBookInfo);
+      toast.success("読書開始日を更新しました！", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    } catch (error: any) {
+      console.log(error.message);
+    }
+  };
+
+  const updateReadingEndDate = async () => {
+    try {
+      if (bookInfo == null) {
+        return;
+      }
+      let requestBody = bookInfo.book;
+      requestBody.readingEndDate = readingEndDate;
+
+      const res = await fetch(`/api/book/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(requestBody),
+      });
+      if (!res.ok) {
+        console.error("Failed to update status");
+        return;
+      }
+      const data = await res.json();
+      const newBookInfo: BookInfo = {
+        book: data,
+        authors: bookInfo?.authors ?? [],
+        subjects: bookInfo?.subjects ?? [],
+      };
+      setBookInfo(newBookInfo);
+      toast.success("読書終了日を更新しました！", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    } catch (error: any) {
+      console.log(error.message);
+    }
   };
 
   return (
@@ -128,6 +206,40 @@ export default function BookDetail({ params }: { params: { id: string } }) {
             <p className="mt-1 text-gray-800">
               <span className="font-semibold">ISBN:</span> {bookInfo?.book.isbn}
             </p>
+
+            {/* 読書開始日 */}
+            <div className="mt-3 flex items-center">
+              <span className="font-semibold">読書開始日:</span>
+              <input
+                type="date"
+                value={readingStartDate}
+                onChange={(e) => setReadingStartDate(e.target.value)}
+                className="ml-2 p-2 border rounded-md bg-white"
+              />
+              <button
+                className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700"
+                onClick={updateReadingStartDate}
+              >
+                更新
+              </button>
+            </div>
+
+            {/* 読書終了日 */}
+            <div className="mt-3 flex items-center">
+              <span className="font-semibold">読書終了日:</span>
+              <input
+                type="date"
+                value={readingEndDate}
+                onChange={(e) => setReadingEndDate(e.target.value)}
+                className="ml-2 p-2 border rounded-md bg-white"
+              />
+              <button
+                className="ml-2 px-4 py-2 bg-blue-600 text-white rounded-md shadow-md hover:bg-blue-700"
+                onClick={updateReadingEndDate}
+              >
+                更新
+              </button>
+            </div>
 
             <div className="mt-3">
               <span className="font-semibold">ステータス:</span>{" "}

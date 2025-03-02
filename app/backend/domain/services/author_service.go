@@ -1,6 +1,8 @@
 package services
 
 import (
+	"slices"
+
 	"github.com/ttttai/golang/domain/entities"
 	"github.com/ttttai/golang/domain/repositories"
 )
@@ -55,6 +57,7 @@ func (as *AuthorService) GetAuthorsByName(name string) (*[]entities.Author, erro
 
 func (as *AuthorService) GetBookAuthorRelations(book *entities.Book, authors *[]entities.Author) (*[]entities.BookAuthor, error) {
 	var bookAuthorRelations []entities.BookAuthor
+	var authorIDs []int
 	for _, author := range *authors {
 		if author.Name == "" {
 			continue
@@ -72,6 +75,10 @@ func (as *AuthorService) GetBookAuthorRelations(book *entities.Book, authors *[]
 			authorID = (*existingAuthor)[0].ID
 		}
 
+		// 同じauthorが複数回出てきたらスキップ
+		if slices.Contains(authorIDs, authorID) {
+			continue
+		}
 		bookAuthorRelations = append(
 			bookAuthorRelations,
 			entities.BookAuthor{
@@ -79,6 +86,7 @@ func (as *AuthorService) GetBookAuthorRelations(book *entities.Book, authors *[]
 				AuthorID: authorID,
 			},
 		)
+		authorIDs = append(authorIDs, authorID)
 	}
 
 	return &bookAuthorRelations, nil

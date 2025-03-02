@@ -1,6 +1,8 @@
 package services
 
 import (
+	"slices"
+
 	"github.com/ttttai/golang/domain/entities"
 	"github.com/ttttai/golang/domain/repositories"
 )
@@ -55,6 +57,7 @@ func (ss *SubjectService) GetSubjectsByName(name string) (*[]entities.Subject, e
 
 func (ss *SubjectService) GetBookSubjectRelations(book *entities.Book, subjects *[]entities.Subject) (*[]entities.BookSubject, error) {
 	var bookSubjectRelations []entities.BookSubject
+	var subjectIDs []int
 	for _, subject := range *subjects {
 		if subject.SubjectName == "" {
 			continue
@@ -72,6 +75,10 @@ func (ss *SubjectService) GetBookSubjectRelations(book *entities.Book, subjects 
 			subjectID = (*existingSubject)[0].ID
 		}
 
+		// 同じsubjectが複数回出てきたらスキップ
+		if slices.Contains(subjectIDs, subjectID) {
+			continue
+		}
 		bookSubjectRelations = append(
 			bookSubjectRelations,
 			entities.BookSubject{
@@ -79,6 +86,7 @@ func (ss *SubjectService) GetBookSubjectRelations(book *entities.Book, subjects 
 				SubjectID: subjectID,
 			},
 		)
+		subjectIDs = append(subjectIDs, subjectID)
 	}
 
 	return &bookSubjectRelations, nil

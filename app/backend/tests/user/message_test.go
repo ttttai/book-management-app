@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/ttttai/golang/controllers"
 	"github.com/ttttai/golang/infra"
+	"github.com/ttttai/golang/tests/mocks"
 )
 
 type GetMessageResponse struct {
@@ -19,7 +20,12 @@ type GetMessageResponse struct {
 func TestGetMessageOK(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	db, _ := infra.NewTestDB()
-	r := controllers.SetupRouter(db)
+	defer func() {
+		db, _ := db.DB()
+		db.Close()
+	}()
+	mockNdlApiRepository := new(mocks.MockNdlApiRepository)
+	r := controllers.SetupTestRouter(db, mockNdlApiRepository)
 
 	req, _ := http.NewRequest("GET", "/user", nil)
 	w := httptest.NewRecorder()

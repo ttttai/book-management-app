@@ -140,6 +140,8 @@ func (br *NdlApiRepository) GetBooksFromNdlApi(title string, maxNum int, offset 
 			PublisherNameKana: bibResource.Publisher.Agent.NameKana,
 			PublishDate:       bibResource.Publisher.Date,
 			Price:             price,
+			ReadingStartDate:  nil,
+			ReadingEndDate:    nil,
 		}
 
 		bookInfoItem := entities.BookInfo{

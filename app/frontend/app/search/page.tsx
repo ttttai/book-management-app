@@ -20,24 +20,22 @@ export default function SearchPage() {
       setIsFirstVisit(false);
       setPrevQuery(query);
 
-      if (prevQuery != query) {
+      let res: Response;
+      if (prevQuery == "" || prevQuery != query) {
         setBookInfo([]);
+        setOffset(1);
+        res = await fetch(`/api/book/search?title=${query}&offset=1`);
+      } else {
+        res = await fetch(`/api/book/search?title=${query}&offset=${offset}`);
       }
 
-      const res = await fetch(
-        `/api/book/search?title=${query}&offset=${offset}`
-      );
       if (!res.ok) {
         throw new Error("Failed to fetch books");
       }
 
       const data = await res.json();
       if (data != null) {
-        if (prevQuery == query) {
-          setBookInfo((prev) => [...prev, ...data]);
-        } else {
-          setBookInfo(data);
-        }
+        setBookInfo((prev) => [...prev, ...data]);
       }
 
       setIsLoading(false);

@@ -30,6 +30,8 @@ func PrepareData(db *gorm.DB) {
 			PublishDate:       &date,
 			Price:             3000,
 			Status:            0,
+			ReadingStartDate:  nil,
+			ReadingEndDate:    nil,
 		},
 	}
 	db.Create(&booksBefore)

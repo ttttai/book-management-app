@@ -61,7 +61,7 @@ func (bs *BookService) CreateBook(book *entities.Book) (*entities.Book, error) {
 		return nil, err
 	}
 
-	return result, err
+	return result, nil
 }
 
 func (bs *BookService) CreateBooks(books *[]entities.Book) (*[]entities.Book, error) {
@@ -73,7 +73,7 @@ func (bs *BookService) CreateBooks(books *[]entities.Book) (*[]entities.Book, er
 		return nil, err
 	}
 
-	return result, err
+	return result, nil
 }
 
 func (bs *BookService) CreateBookAuthors(bookAuthors *[]entities.BookAuthor) (*[]entities.BookAuthor, error) {
@@ -86,7 +86,7 @@ func (bs *BookService) CreateBookAuthors(bookAuthors *[]entities.BookAuthor) (*[
 		return nil, err
 	}
 
-	return result, err
+	return result, nil
 }
 
 func (bs *BookService) CreateBookSubjects(bookSubjects *[]entities.BookSubject) (*[]entities.BookSubject, error) {
@@ -99,7 +99,7 @@ func (bs *BookService) CreateBookSubjects(bookSubjects *[]entities.BookSubject) 
 		return nil, err
 	}
 
-	return result, err
+	return result, nil
 }
 
 func (bs *BookService) GetBooksByTitle(title string) (*[]entities.Book, error) {

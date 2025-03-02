@@ -34,6 +34,14 @@ func TestUpdateBookOK(t *testing.T) {
 	dateTime, _ := time.ParseInLocation("2006-01-02", date, loc)
 	expectedDateTime := dateTime.Format(time.RFC3339)
 
+	startDate := "2025-05-01"
+	startDateTime, _ := time.ParseInLocation("2006-01-02", startDate, loc)
+	expectedStartDateTime := startDateTime.Format(time.RFC3339)
+
+	endDate := "2025-06-01"
+	endDateTime, _ := time.ParseInLocation("2006-01-02", endDate, loc)
+	expectedEndDateTime := endDateTime.Format(time.RFC3339)
+
 	r := controllers.SetupTestRouter(db, mockNdlApiRepository)
 
 	requestBody := dto.UpdateBookRequestParam{
@@ -43,8 +51,10 @@ func TestUpdateBookOK(t *testing.T) {
 		TitleNameKana:     "テスト2",
 		PublisherName:     "test社2",
 		PublisherNameKana: "テストシャ2",
-		PublishDate:       expectedDateTime,
+		PublishDate:       &expectedDateTime,
 		Price:             5000,
+		ReadingStartDate:  &expectedStartDateTime,
+		ReadingEndDate:    &expectedEndDateTime,
 	}
 	requestBodyJson, _ := json.Marshal(requestBody)
 
@@ -62,6 +72,8 @@ func TestUpdateBookOK(t *testing.T) {
 		PublishDate:       &expectedDateTime,
 		Price:             5000,
 		Status:            0,
+		ReadingStartDate:  &expectedStartDateTime,
+		ReadingEndDate:    &expectedEndDateTime,
 	}
 	expectedResponseJson, _ := json.Marshal(expectedResponse)
 
@@ -86,6 +98,8 @@ func TestUpdateBookOK(t *testing.T) {
 			PublishDate:       &expectedDateTime,
 			Price:             5000,
 			Status:            0,
+			ReadingStartDate:  &expectedStartDateTime,
+			ReadingEndDate:    &expectedEndDateTime,
 		},
 	}
 	assert.Equal(t, expectedBooks, books)

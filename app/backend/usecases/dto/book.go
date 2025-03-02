@@ -21,14 +21,16 @@ type CreateBookInfoRequestParam struct {
 }
 
 type BookParam struct {
-	ISBN              int    `json:"isbn" binding:"required"`
-	TitleName         string `json:"title_name"`
-	TitleNameKana     string `json:"title_name_kana"`
-	PublisherName     string `json:"publisher_name"`
-	PublisherNameKana string `json:"publisher_name_kana"`
-	PublishDate       string `json:"publish_date"`
-	Price             int    `json:"price"`
-	Status            int    `json:"status"`
+	ISBN              int     `json:"isbn" binding:"required"`
+	TitleName         string  `json:"title_name"`
+	TitleNameKana     string  `json:"title_name_kana"`
+	PublisherName     string  `json:"publisher_name"`
+	PublisherNameKana string  `json:"publisher_name_kana"`
+	PublishDate       *string `json:"publish_date"`
+	Price             int     `json:"price"`
+	Status            int     `json:"status"`
+	ReadingStartDate  *string `json:"reading_start_date"`
+	ReadingEndDate    *string `json:"reading_end_date"`
 }
 
 type AuthorParam struct {
@@ -42,14 +44,17 @@ type SubjectParam struct {
 }
 
 type UpdateBookRequestParam struct {
-	ID                int    `json:"id" binding:"required"`
-	ISBN              int    `json:"isbn" binding:"required"`
-	TitleName         string `json:"title_name"`
-	TitleNameKana     string `json:"title_name_kana"`
-	PublisherName     string `json:"publisher_name"`
-	PublisherNameKana string `json:"publisher_name_kana"`
-	PublishDate       string `json:"publish_date"`
-	Price             int    `json:"price"`
+	ID                int     `json:"id" binding:"required"`
+	ISBN              int     `json:"isbn" binding:"required"`
+	TitleName         string  `json:"title_name"`
+	TitleNameKana     string  `json:"title_name_kana"`
+	PublisherName     string  `json:"publisher_name"`
+	PublisherNameKana string  `json:"publisher_name_kana"`
+	PublishDate       *string `json:"publish_date"`
+	Price             int     `json:"price"`
+	Status            int     `json:"status"`
+	ReadingStartDate  *string `json:"reading_start_date"`
+	ReadingEndDate    *string `json:"reading_end_date"`
 }
 
 type UpdateBookStatusRequestPathParam struct {
@@ -63,4 +68,8 @@ type UpdateBookStatusRequestBodyParam struct {
 type GetBookInfoByStatusRequestParam struct {
 	Title  string `form:"title"`
 	Status []int  `form:"status"`
+}
+
+type GetGeminiResponseRequestParam struct {
+	Prompt string `form:"prompt"`
 }

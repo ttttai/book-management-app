@@ -8,6 +8,8 @@ type Book = {
   publishDate: string;
   price: number;
   status: 0 | 1 | 2 | 3;
+  readingStartDate: string | null;
+  readingEndDate: string | null;
 };
 
 type Author = {
