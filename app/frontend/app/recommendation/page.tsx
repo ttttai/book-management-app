@@ -1,33 +1,26 @@
-"use client";
-
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import { Bot } from "lucide-react";
-import Loading from "./loading";
+// import Loading from "./loading";
 import BookInfoDisplay from "../components/bookInfoDisplay";
+import camelcaseKeys from "camelcase-keys";
 
-export default function BookRecommendations() {
-  const [bookInfo, setBookInfo] = useState<BookInfo[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+export default async function BookRecommendations() {
+  let bookInfo: BookInfo[] = [];
 
-  const fetchBook = async () => {
-    try {
-      setIsLoading(true);
-      const res = await fetch(`/api/book/gemini`);
-      if (!res.ok) {
-        console.error("Failed to fetch book");
-        return;
-      }
-      const data = await res.json();
-      setBookInfo(data);
-      setIsLoading(false);
-    } catch (err: any) {
-      console.log(err.message);
+  try {
+    const apiUrl = `${process.env.API_URL}/book/gemini`;
+    const res = await fetch(apiUrl, { cache: "force-cache" });
+    const data = await res.json();
+    const dataCamel = camelcaseKeys(data, { deep: true });
+
+    if (!res.ok) {
+      console.error("Failed to fetch book");
+    } else {
+      bookInfo = dataCamel;
     }
-  };
-
-  useEffect(() => {
-    fetchBook();
-  }, []);
+  } catch (err: any) {
+    console.error("Error fetching books:", err.message);
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100 flex flex-col items-center justify-center px-6 py-12">
@@ -39,26 +32,13 @@ export default function BookRecommendations() {
         AIがあなたの読書履歴からおすすめの本を選びました
       </p>
 
-      {/* 本のリスト */}
-      <div className="flex items-center justify-center">
-        <div className="flex items-center justify-center px-30 pt-5">
-          <div>
-            {isLoading ? (
-              <Loading />
-            ) : (
-              <div>
-                <div className="grid grid-cols-4 gap-4">
-                  {bookInfo.map((bookInfoItem) => (
-                    <BookInfoDisplay
-                      key={bookInfoItem.book.id}
-                      bookInfoItem={bookInfoItem}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+      <div className="grid grid-cols-4 gap-4">
+        {bookInfo.map((bookInfoItem) => (
+          <BookInfoDisplay
+            key={bookInfoItem.book.id}
+            bookInfoItem={bookInfoItem}
+          />
+        ))}
       </div>
     </div>
   );

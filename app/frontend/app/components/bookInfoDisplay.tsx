@@ -1,5 +1,5 @@
-import { useRouter } from "next/navigation";
 import { BOOK_STATUS_LABELS, BOOK_STATUS_COLORS } from "../constants";
+import Link from "next/link";
 
 type BookInfoDisplayProps = {
   bookInfoItem: BookInfo;
@@ -8,14 +8,13 @@ type BookInfoDisplayProps = {
 export default function BookInfoDisplay({
   bookInfoItem,
 }: BookInfoDisplayProps) {
-  const router = useRouter();
   return (
-    <div
+    <Link
+      href={`/bookshelf/book/${bookInfoItem.book.id}`}
       key={bookInfoItem.book.id}
       className="flex flex-col items-center border border-gray-300 p-4 rounded-lg shadow-md bg-white cursor-pointer
-                          hover:shadow-xl hover:scale-105 hover:border-blue-500 hover:bg-gray-100 
-                          transition-all duration-200"
-      onClick={() => router.push(`/bookshelf/book/${bookInfoItem.book.id}`)}
+                      hover:shadow-xl hover:scale-105 hover:border-blue-500 hover:bg-gray-100 
+                      transition-all duration-200"
     >
       <div className="aspect-[2/3] w-full max-w-xs overflow-hidden rounded-md">
         <img
@@ -51,6 +50,6 @@ export default function BookInfoDisplay({
           {BOOK_STATUS_LABELS[bookInfoItem.book.status]}
         </span>
       </div>
-    </div>
+    </Link>
   );
 }

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import camelcaseKeys from "camelcase-keys";
-import snakecaseKeys from "snakecase-keys";
 
 export async function GET(req: NextRequest) {
   try {
