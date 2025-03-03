@@ -11,7 +11,11 @@ import {
   BOOK_STATUS_LABELS,
 } from "../../../constants";
 
-export default function BookDetail({ params }: { params: { id: string } }) {
+export default async function BookDetail({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const BOOK_STATUSES = [
     {
       value: BOOK_STATUS_NOT_PURCHASED,
@@ -31,7 +35,7 @@ export default function BookDetail({ params }: { params: { id: string } }) {
     },
   ];
 
-  const { id } = useParams();
+  const { id } = await params;
   const [bookInfo, setBookInfo] = useState<BookInfo | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<number>(0);
   const [readingStartDate, setReadingStartDate] = useState<string>("");
