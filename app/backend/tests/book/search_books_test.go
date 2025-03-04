@@ -21,7 +21,6 @@ func PrepareData(db *gorm.DB) {
 
 	booksBefore := []entities.Book{
 		{
-			ID:                1,
 			ISBN:              1111111111111,
 			TitleName:         "test",
 			TitleNameKana:     "テスト",
@@ -38,12 +37,10 @@ func PrepareData(db *gorm.DB) {
 
 	authorsBefore := []entities.Author{
 		{
-			ID:       1,
 			Name:     "test_name",
 			NameKana: "テストネーム",
 		},
 		{
-			ID:       2,
 			Name:     "test_name2",
 			NameKana: "テストネーム2",
 		},
@@ -52,12 +49,10 @@ func PrepareData(db *gorm.DB) {
 
 	subjectsBefore := []entities.Subject{
 		{
-			ID:          1,
 			SubjectName: "test_subject",
 			SubjectKana: "テストサブジェクト",
 		},
 		{
-			ID:          2,
 			SubjectName: "test_subject2",
 			SubjectKana: "テストサブジェクト2",
 		},
