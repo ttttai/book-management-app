@@ -30,14 +30,14 @@ export default async function BookRecommendations() {
         AIがあなたの読書履歴からおすすめの本を選びました
       </p>
 
-      {/* <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         {bookInfo.map((bookInfoItem) => (
           <BookInfoDisplay
             key={bookInfoItem.book.id}
             bookInfoItem={bookInfoItem}
           />
         ))}
-      </div> */}
+      </div>
     </div>
   );
 }
