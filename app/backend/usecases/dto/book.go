@@ -2,7 +2,7 @@ package dto
 
 type SearchBookRequestParam struct {
 	Title  string `form:"title"`
-	MaxNum int    `form:"maxNum,default=10"`
+	MaxNum int    `form:"maxNum,default=20"`
 	Offset int    `form:"offset,default=1"`
 }
 
