@@ -25,7 +25,7 @@ AI のおすすめ
 
 ### バックエンド
 
-- Golang
+- Go
 - Gin (Web フレームワーク)
 - Gorm (ORM)
 - PostgreSQL (DB)
