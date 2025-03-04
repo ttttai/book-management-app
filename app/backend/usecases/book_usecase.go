@@ -47,6 +47,11 @@ func (bu *BookUsecase) SearchBooks(title string, maxNum int, offset int) (*[]ent
 	var excludedBookInfo []entities.BookInfo
 	var bookInfoISBNs []int
 	for _, bookInfoItem := range *bookInfoFromApi {
+		// APIから同じISBNの本を取得した場合スキップ
+		if slices.Contains(bookInfoISBNs, bookInfoItem.Book.ISBN) {
+			continue
+		}
+
 		book, err := bu.bookService.GetBookByISBN(bookInfoItem.Book.ISBN)
 		if err != nil {
 			return nil, err
@@ -55,18 +60,13 @@ func (bu *BookUsecase) SearchBooks(title string, maxNum int, offset int) (*[]ent
 		if book == nil {
 			excludedBookInfo = append(excludedBookInfo, bookInfoItem)
 		} else {
-			// APIから同じISBNの本を取得した場合スキップ
-			if slices.Contains(bookInfoISBNs, book.ISBN) {
-				continue
-			}
-			bookInfoISBNs = append(bookInfoISBNs, book.ISBN)
-
 			bookInfoItem, err := bu.GetBookInfoByBookId(book.ID)
 			if err != nil {
 				return nil, err
 			}
 			bookInfo = append(bookInfo, *bookInfoItem)
 		}
+		bookInfoISBNs = append(bookInfoISBNs, bookInfoItem.Book.ISBN)
 	}
 
 	// DBに登録
