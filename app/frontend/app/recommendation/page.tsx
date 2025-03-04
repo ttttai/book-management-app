@@ -1,6 +1,4 @@
-// import { useEffect, useState } from "react";
 import { Bot } from "lucide-react";
-// import Loading from "./loading";
 import BookInfoDisplay from "../components/bookInfoDisplay";
 import camelcaseKeys from "camelcase-keys";
 
