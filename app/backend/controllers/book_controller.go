@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"slices"
 
@@ -108,7 +107,6 @@ func (bc *BookController) UpdateBook(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
 
-	fmt.Println(request)
 	book := &entities.Book{
 		ID:                request.ID,
 		ISBN:              request.ISBN,
@@ -122,7 +120,6 @@ func (bc *BookController) UpdateBook(c *gin.Context) {
 		ReadingStartDate:  request.ReadingStartDate,
 		ReadingEndDate:    request.ReadingEndDate,
 	}
-	fmt.Println(book)
 
 	res, err := bc.bookUsecase.UpdateBook(book)
 	if err != nil {
