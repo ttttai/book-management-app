@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
@@ -11,7 +11,7 @@ INSERT INTO users (name, email) VALUES
 ('Saki Abe', 'saki.abe@example.com'),
 ('Taishi Yamamoto', 'taishi.yamamoto@example.com');
 
-CREATE TABLE books (
+CREATE TABLE IF NOT EXISTS books (
     id SERIAL PRIMARY KEY,
     isbn BIGINT UNIQUE NOT NULL,
     title_name TEXT,
@@ -27,7 +27,7 @@ CREATE TABLE books (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE authors (
+CREATE TABLE IF NOT EXISTS authors (
     id SERIAL PRIMARY KEY,
     name TEXT,
     name_kana TEXT,
@@ -35,7 +35,7 @@ CREATE TABLE authors (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE subjects (
+CREATE TABLE IF NOT EXISTS subjects (
     id SERIAL PRIMARY KEY,
     subject_name TEXT,
     subject_kana TEXT,
@@ -43,7 +43,7 @@ CREATE TABLE subjects (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE book_authors (
+CREATE TABLE IF NOT EXISTS book_authors (
     book_id INT,
     author_id INT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -53,7 +53,7 @@ CREATE TABLE book_authors (
     FOREIGN KEY (author_id) REFERENCES authors(id) ON DELETE CASCADE
 );
 
-CREATE TABLE book_subjects (
+CREATE TABLE IF NOT EXISTS book_subjects (
     book_id INT,
     subject_id INT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
