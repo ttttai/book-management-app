@@ -47,5 +47,5 @@ func GetDatabaseDSN() string {
 	port := os.Getenv("DB_PORT")
 	name := os.Getenv("DB_NAME")
 
-	return fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable TimeZone=Asia/Tokyo", host, port, user, name, password)
+	return fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=require TimeZone=Asia/Tokyo", host, port, user, name, password)
 }
