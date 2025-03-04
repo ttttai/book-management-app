@@ -1,24 +1,32 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Bot } from "lucide-react";
 import BookInfoDisplay from "../components/bookInfoDisplay";
-import camelcaseKeys from "camelcase-keys";
+import Loading from "./loading";
 
-export default async function BookRecommendations() {
-  let bookInfo: BookInfo[] = [];
+export default function BookRecommendations() {
+  const [bookInfo, setBookInfo] = useState<BookInfo[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  try {
-    const apiUrl = `${process.env.API_URL}/book/gemini`;
-    const res = await fetch(apiUrl, { cache: "force-cache" });
-    const data = await res.json();
-    const dataCamel = camelcaseKeys(data, { deep: true });
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const res = await fetch(`api/book/gemini`);
+        if (!res.ok) {
+          throw new Error("Failed to fetch books");
+        }
+        const data = await res.json();
+        setBookInfo(data);
+      } catch (err: any) {
+        console.error("Error fetching books:", err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    if (!res.ok) {
-      console.error("Failed to fetch book");
-    } else {
-      bookInfo = dataCamel;
-    }
-  } catch (err: any) {
-    console.error("Error fetching books:", err.message);
-  }
+    fetchBooks();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100 flex flex-col items-center justify-center px-6 py-12">
@@ -30,14 +38,22 @@ export default async function BookRecommendations() {
         AIがあなたの読書履歴からおすすめの本を選びました
       </p>
 
-      <div className="grid grid-cols-4 gap-4">
-        {bookInfo.map((bookInfoItem) => (
-          <BookInfoDisplay
-            key={bookInfoItem.book.id}
-            bookInfoItem={bookInfoItem}
-          />
-        ))}
-      </div>
+      {isLoading ? (
+        <Loading />
+      ) : bookInfo.length === 0 ? (
+        <p className="text-lg text-gray-600">
+          おすすめの本が見つかりませんでした。
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {bookInfo.map((bookInfoItem) => (
+            <BookInfoDisplay
+              key={bookInfoItem.book.id}
+              bookInfoItem={bookInfoItem}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
