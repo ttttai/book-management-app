@@ -15,7 +15,7 @@ export default async function Home() {
               MyLibraryへようこそ！
             </h1>
             <p className="text-lg text-gray-600 mt-4">
-              あなたの読書体験をもっと楽しく、もっと便利に。
+              あなたの読書体験をもっと楽しく、もっと便利に
             </p>
           </div>
 
