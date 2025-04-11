@@ -1,7 +1,7 @@
 import { Search, Library, Bot } from "lucide-react";
 import Link from "next/link";
 import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+import { authOptions } from "@/app/lib/authOptions";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
