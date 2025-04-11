@@ -13,19 +13,24 @@
     - メールアドレス：tmp@tmp
     - パスワード：tmp
 
-ログイン画面
+#### ログイン画面
+
 ![ログイン画面](./img/login_screen.png)
 
-ホーム画面
+#### ホーム画面
+
 ![ホーム画面](./img/home_screen.png)
 
-検索画面
+#### 検索画面
+
 ![検索画面](./img/search_screen.png)
 
-マイ本棚
+#### マイ本棚
+
 ![マイ本棚](./img/bookshelf_screen.png)
 
-AI のおすすめ
+#### AI のおすすめ
+
 ![AIのおすすめ画面](./img/recommendation_screen.png)
 
 ## 技術スタック
