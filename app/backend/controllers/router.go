@@ -20,6 +20,11 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	userController := NewUserController(userUsecase)
 	setupUserRoutes(r, userController)
 
+	authenticationRepository := repositories.NewAuthenticationRepository(db)
+	authenticationUsecase := usecases.NewAuthenticationUsecase(authenticationRepository)
+	authenticationController := NewAuthenticationController(authenticationUsecase)
+	setupAuthenticationRoutes(r, authenticationController)
+
 	ndlApiRepository := repositories.NewNdlApiRepository()
 
 	authorRepository := repositories.NewAuthorRepository(db)
@@ -47,6 +52,11 @@ func SetupTestRouter(db *gorm.DB, mockNdlApiRepository repository_interfaces.INd
 	userUsecase := usecases.NweUserUsecase(userRepository)
 	userController := NewUserController(userUsecase)
 	setupUserRoutes(r, userController)
+
+	authenticationRepository := repositories.NewAuthenticationRepository(db)
+	authenticationUsecase := usecases.NewAuthenticationUsecase(authenticationRepository)
+	authenticationController := NewAuthenticationController(authenticationUsecase)
+	setupAuthenticationRoutes(r, authenticationController)
 
 	authorRepository := repositories.NewAuthorRepository(db)
 	authorService := services.NewAuthorService(authorRepository)
@@ -93,5 +103,13 @@ func setupBookRoutes(r *gin.Engine, bookController IBookController) {
 		book.PUT("/:id", bookController.UpdateBook)
 		book.PUT("/:id/status", bookController.UpdateBookStatus)
 		book.DELETE("/:id", bookController.DeleteBook)
+	}
+}
+
+func setupAuthenticationRoutes(r *gin.Engine, authenticationController IAuthenticationController) {
+	authentication := r.Group("/authentication")
+	{
+		authentication.GET("/search", authenticationController.GetByEmail)
+		authentication.POST("/register", authenticationController.Create)
 	}
 }

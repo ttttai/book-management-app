@@ -62,3 +62,14 @@ CREATE TABLE IF NOT EXISTS book_subjects (
     FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
     FOREIGN KEY (subject_id) REFERENCES subjects(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS authentications (
+    id SERIAL PRIMARY KEY,
+    password TEXT,
+    email TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO authentications (password, email) VALUES 
+('tmp', 'tmp@tmp.com')

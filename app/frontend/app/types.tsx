@@ -29,3 +29,9 @@ type BookInfo = {
   authors: Author[];
   subjects: Subject[];
 };
+
+type Authentication = {
+  id: number;
+  email: string;
+  password: string;
+};

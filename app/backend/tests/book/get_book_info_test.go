@@ -603,5 +603,4 @@ func TestGetBookInfoByInvalidStatusNG(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	assert.JSONEq(t, expectedResponse, w.Body.String())
-
 }
