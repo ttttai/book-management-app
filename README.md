@@ -31,6 +31,8 @@
 
 #### AI のおすすめ画面
 
+![AIのおすすめ画面](./img/recommendation_screen.png)
+
 ## 技術スタック
 
 ### バックエンド
