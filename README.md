@@ -29,9 +29,7 @@
 
 ![マイ本棚](./img/bookshelf_screen.png)
 
-#### AI のおすすめ
-
-![AIのおすすめ画面](./img/recommendation_screen.png)
+#### AI のおすすめ画面
 
 ## 技術スタック
 
