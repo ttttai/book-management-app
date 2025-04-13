@@ -1,6 +1,6 @@
 # book-management-app
 
-本管理アプリは[こちら](https://frontend-three-psi-89.vercel.app/)から
+本管理アプリは[こちら](https://frontend-three-psi-89.vercel.app/login)から
 
 ## 機能
 
