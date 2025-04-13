@@ -53,5 +53,3 @@
 - Vercel (フロンエンド用サーバー)
 - Docker
 - Docker Compose
-
-注) 初回リクエストに時間がかかります
