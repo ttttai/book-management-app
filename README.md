@@ -41,15 +41,15 @@
 
 ### バックエンド
 
-- Go
-- Gin (Web フレームワーク)
-- Gorm (ORM)
-- PostgreSQL (DB)
+- Go v1.24.0
+- Gin v1.10.0
+- Gorm v.1.25.12
+- PostgreSQL v17.4
 
 ### フロントエンド
 
-- Next.js
-- TypeScript
+- Next.js v15.2.0
+- TypeScript v5.7.3
 
 ### インフラ
 
