@@ -37,48 +37,98 @@ func NewBookUsecase(bookService services.IBookService, authorService services.IA
 
 func (bu *BookUsecase) SearchBooks(title string, maxNum int, offset int) (*[]entities.BookInfo, error) {
 	var bookInfo []entities.BookInfo
+	booksFromDBChan := make(chan *[]entities.BookInfo)
+	booksFromApiChan := make(chan *[]entities.BookInfo)
 
-	bookInfoFromApi, err := bu.bookService.GetBooksFromNdlApi(title, maxNum, offset)
-	if err != nil {
-		return nil, err
-	}
-
-	// すでにDBに存在している場合、除外
-	var excludedBookInfo []entities.BookInfo
-	var bookInfoISBNs []int
-	for _, bookInfoItem := range *bookInfoFromApi {
-		// APIから同じISBNの本を取得した場合スキップ
-		if slices.Contains(bookInfoISBNs, bookInfoItem.Book.ISBN) {
-			continue
-		}
-
-		book, err := bu.bookService.GetBookByISBN(bookInfoItem.Book.ISBN)
+	// DBからの取得
+	go func() {
+		booksFromDB, err := bu.bookService.GetBooksByFuzzyTitle(title)
 		if err != nil {
-			return nil, err
+			booksFromDBChan <- &[]entities.BookInfo{}
+			return
 		}
 
-		if book == nil {
-			excludedBookInfo = append(excludedBookInfo, bookInfoItem)
-		} else {
-			bookInfoItem, err := bu.GetBookInfoByBookId(book.ID)
+		var subBooksFromDB []entities.Book
+		start := offset
+		end := offset + 30
+		if start >= len(*booksFromDB) {
+			booksFromDBChan <- &[]entities.BookInfo{}
+			return
+		}
+		if end > len(*booksFromDB) {
+			end = len(*booksFromDB)
+		}
+
+		subBooksFromDB = (*booksFromDB)[start:end]
+
+		var bookIdsFromDB []int
+		for _, book := range subBooksFromDB {
+			bookIdsFromDB = append(bookIdsFromDB, book.ID)
+		}
+		bookInfoFromDB, err := bu.bookService.GetBookInfoByBookIds(bookIdsFromDB)
+		if err != nil {
+			booksFromDBChan <- &[]entities.BookInfo{}
+			return
+		}
+
+		booksFromDBChan <- bookInfoFromDB
+		close(booksFromDBChan)
+	}()
+
+	// APIからの取得
+	go func() {
+		bookInfoFromApi, err := bu.bookService.GetBooksFromNdlApi(title, maxNum, offset)
+		if err != nil {
+			return
+		}
+
+		// すでにDBに存在している場合、除外
+		var excludedBookInfo []entities.BookInfo
+		var bookInfoISBNs []int
+		for _, bookInfoItem := range *bookInfoFromApi {
+			// APIから同じISBNの本を取得した場合スキップ
+			if slices.Contains(bookInfoISBNs, bookInfoItem.Book.ISBN) {
+				continue
+			}
+
+			book, err := bu.bookService.GetBookByISBN(bookInfoItem.Book.ISBN)
 			if err != nil {
-				return nil, err
+				return
+			}
+
+			if book == nil {
+				excludedBookInfo = append(excludedBookInfo, bookInfoItem)
+			} else {
+				// bookInfoItem, err := bu.GetBookInfoByBookId(book.ID)
+				// if err != nil {
+				// 	return
+				// }
+				// bookInfo = append(bookInfo, *bookInfoItem)
+			}
+			bookInfoISBNs = append(bookInfoISBNs, bookInfoItem.Book.ISBN)
+		}
+
+		// DBに登録
+		for _, excludedBookInfoItem := range excludedBookInfo {
+			bookInfoItem, err := bu.CreateBookInfo(&excludedBookInfoItem)
+			if err != nil {
+				return
 			}
 			bookInfo = append(bookInfo, *bookInfoItem)
 		}
-		bookInfoISBNs = append(bookInfoISBNs, bookInfoItem.Book.ISBN)
+
+		booksFromApiChan <- &bookInfo
+		close(booksFromApiChan)
+	}()
+
+	// DBに存在したらその情報を返す
+	bookInfoFromDB := <-booksFromDBChan
+	if len(*bookInfoFromDB) != 0 {
+		return bookInfoFromDB, nil
 	}
 
-	// DBに登録
-	for _, excludedBookInfoItem := range excludedBookInfo {
-		bookInfoItem, err := bu.CreateBookInfo(&excludedBookInfoItem)
-		if err != nil {
-			return nil, err
-		}
-		bookInfo = append(bookInfo, *bookInfoItem)
-	}
-
-	return &bookInfo, nil
+	bookInfoFromApi := <-booksFromApiChan
+	return bookInfoFromApi, nil
 }
 
 func (bu *BookUsecase) GetBookInfoByBookId(id int) (*entities.BookInfo, error) {
