@@ -101,12 +101,12 @@ export default function LoginPage() {
           {loading ? "ログイン中..." : "ログイン"}
         </button>
 
-        <p className="text-sm text-center text-gray-500">
+        {/* <p className="text-sm text-center text-gray-500">
           アカウントをお持ちでないですか？{" "}
           <a href="/register" className="text-blue-600 hover:underline">
             新規登録
           </a>
-        </p>
+        </p> */}
       </form>
     </div>
   );
