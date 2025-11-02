@@ -1,32 +1,9 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { Bot } from "lucide-react";
 import BookInfoDisplay from "../components/bookInfoDisplay";
-import Loading from "./loading";
 
-export default function BookRecommendations() {
-  const [bookInfo, setBookInfo] = useState<BookInfo[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const res = await fetch(`api/book/gemini`);
-        if (!res.ok) {
-          throw new Error("Failed to fetch books");
-        }
-        const data = await res.json();
-        setBookInfo(data);
-      } catch (err: any) {
-        console.error("Error fetching books:", err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchBooks();
-  }, []);
+export default async function BookRecommendations() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/book/gemini`);
+  const bookInfo: BookInfo[] = await res.json();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100 flex flex-col items-center justify-center px-6 py-12">
@@ -38,9 +15,7 @@ export default function BookRecommendations() {
         AIがあなたの読書履歴からおすすめの本を選びました
       </p>
 
-      {isLoading ? (
-        <Loading />
-      ) : bookInfo.length === 0 ? (
+      {bookInfo.length === 0 ? (
         <p className="text-lg text-gray-600">
           おすすめの本が見つかりませんでした。
         </p>

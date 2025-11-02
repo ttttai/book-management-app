@@ -27,8 +27,6 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log("aaaaa");
-        console.log("credentials!.email", credentials!.email);
         const authentication = await getAuthenticationByEmail(
           credentials!.email
         );
