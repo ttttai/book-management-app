@@ -13,7 +13,8 @@ export default async function MyPage() {
     BOOK_STATUS_READ_COMPLETED,
   ];
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/book?status=${bookStatuses}`
+    `${process.env.NEXT_PUBLIC_API_URL}/api/book?status=${bookStatuses}`,
+    { cache: "no-store" }
   );
   const booksData: BookInfo[] = await res.json();
 
